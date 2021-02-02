@@ -13,6 +13,9 @@ Cine Encoder is an application that allows you to convert media files while pres
   - ProRes 4444 4:4:4 (10 bit)
 
 ![View](./images/View.png)
+
+The preset menu is used to select the encoding format. You can add your own preset or change an existing one.
+
 ![View](./images/View_2.png)
 
 ### Installation
