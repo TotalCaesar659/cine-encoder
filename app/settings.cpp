@@ -84,7 +84,6 @@ void Settings::setParameters(bool *ptr_batch_mode, QFile *ptr_stn_file,
     _ptr_timer_interval = ptr_timer_interval;
     _ptr_theme = ptr_theme;
 
-    setTheme(*_ptr_theme);
     ui_settings->lineEdit_9->setText(*_ptr_temp_folder);
     ui_settings->lineEdit_10->setText(*_ptr_output_folder);
     ui_settings->spinBox_3->setValue(*_ptr_timer_interval);
@@ -261,92 +260,9 @@ void Settings::on_checkBox_3_clicked()  // Protection mode select
 void Settings::call_task_complete(const QString &_message, const bool &_timer_mode)   // Call task complete
 {
     Taskcomplete taskcomplete(this);
-    taskcomplete.setMessage(_message, _timer_mode, *_ptr_theme);
+    taskcomplete.setMessage(_message, _timer_mode);
     taskcomplete.setModal(true);
     taskcomplete.exec();
-}
-
-void Settings::setTheme(int &ind_theme)   // Set theme
-{
-    switch (ind_theme)
-    {
-        case 0:
-        {
-            ui_settings->frame_main->setStyleSheet("QFrame {background-color: rgb(5, 20, 28);} QLineEdit {color: rgb(98, 103, 111); "
-                                                   "background-color: rgb(27, 29, 35); border-radius: 0px; border: 2px solid rgb(27, 29, 35); "
-                                                   "padding-left: 10px;} QLineEdit:hover {border: 2px solid rgb(64, 71, 88);} "
-                                                   "QLineEdit:focus {border: 2px solid rgb(91, 101, 124);} QCheckBox {spacing: 12px; "
-                                                   "color: rgb(255, 255, 255); background-color: transparent;} QCheckBox::indicator {border: "
-                                                   "2px solid #5A5A5A; background: none; width: 12px; height: 12px;} QCheckBox::indicator:checked "
-                                                   "{image: url(:/16x16/icons/16x16/cil-check-alt.png); border: 2px solid #5A5A5A; background: none; "
-                                                   "width: 12px; height: 12px;}");
-            ui_settings->frame->setStyleSheet("background-color: rgb(5, 20, 28);");
-            ui_settings->label_temp->setStyleSheet("QLabel {color: rgb(255, 255, 255);}");
-            ui_settings->label_output->setStyleSheet("QLabel {color: rgb(255, 255, 255);}");
-            ui_settings->label_sec->setStyleSheet("QLabel {color: rgb(255, 255, 255);}");
-            ui_settings->label_theme->setStyleSheet("QLabel {color: rgb(255, 255, 255);}");
-            ui_settings->checkBox_1->setStyleSheet("color: rgb(255, 255, 255);");
-            ui_settings->checkBox_3->setStyleSheet("color: rgb(255, 255, 255);");
-            ui_settings->frame_3->setStyleSheet("background-color: rgba(27, 29, 35, 20);");
-        }; break;
-        case 1:
-        {
-            ui_settings->frame_main->setStyleSheet("QFrame {background-color: rgb(3, 3, 5);} QLineEdit {color: rgb(98, 103, 111); "
-                                                   "background-color: rgb(27, 29, 35); border-radius: 0px; border: 2px solid rgb(27, 29, 35); "
-                                                   "padding-left: 10px;} QLineEdit:hover {border: 2px solid rgb(64, 71, 88);} "
-                                                   "QLineEdit:focus {border: 2px solid rgb(91, 101, 124);} QCheckBox {spacing: 12px; "
-                                                   "color: rgb(255, 255, 255); background-color: transparent;} QCheckBox::indicator {border: "
-                                                   "2px solid #5A5A5A; background: none; width: 12px; height: 12px;} QCheckBox::indicator:checked "
-                                                   "{image: url(:/16x16/icons/16x16/cil-check-alt.png); border: 2px solid #5A5A5A; background: none; "
-                                                   "width: 12px; height: 12px;}");
-            ui_settings->frame->setStyleSheet("background-color: rgb(3, 3, 5);");
-            ui_settings->label_temp->setStyleSheet("QLabel {color: rgb(255, 255, 255);}");
-            ui_settings->label_output->setStyleSheet("QLabel {color: rgb(255, 255, 255);}");
-            ui_settings->label_sec->setStyleSheet("QLabel {color: rgb(255, 255, 255);}");
-            ui_settings->label_theme->setStyleSheet("QLabel {color: rgb(255, 255, 255);}");
-            ui_settings->checkBox_1->setStyleSheet("color: rgb(255, 255, 255);");
-            ui_settings->checkBox_3->setStyleSheet("color: rgb(255, 255, 255);");
-            ui_settings->frame_3->setStyleSheet("background-color: rgba(27, 29, 35, 20); border-top: 1px solid rgba(100, 100, 168, 50);");
-        }; break;
-        case 2:
-        {
-            ui_settings->frame_main->setStyleSheet("QFrame {background-color: rgb(39, 44, 54);} QLineEdit {color: rgb(98, 103, 111); "
-                                                   "background-color: rgb(27, 29, 35); border-radius: 0px; border: 2px solid rgb(27, 29, 35); "
-                                                   "padding-left: 10px;} QLineEdit:hover {border: 2px solid rgb(64, 71, 88);} "
-                                                   "QLineEdit:focus {border: 2px solid rgb(91, 101, 124);} QCheckBox {spacing: 12px; "
-                                                   "color: rgb(255, 255, 255); background-color: transparent;} QCheckBox::indicator {border: "
-                                                   "2px solid #5A5A5A; background: none; width: 12px; height: 12px;} QCheckBox::indicator:checked "
-                                                   "{image: url(:/16x16/icons/16x16/cil-check-alt.png); border: 2px solid #5A5A5A; background: none; "
-                                                   "width: 12px; height: 12px;}");
-            ui_settings->frame->setStyleSheet("background-color: rgb(39, 44, 54);");
-            ui_settings->label_temp->setStyleSheet("QLabel {color: rgb(255, 255, 255);}");
-            ui_settings->label_output->setStyleSheet("QLabel {color: rgb(255, 255, 255);}");
-            ui_settings->label_sec->setStyleSheet("QLabel {color: rgb(255, 255, 255);}");
-            ui_settings->label_theme->setStyleSheet("QLabel {color: rgb(255, 255, 255);}");
-            ui_settings->checkBox_1->setStyleSheet("color: rgb(255, 255, 255);");
-            ui_settings->checkBox_3->setStyleSheet("color: rgb(255, 255, 255);");
-            ui_settings->frame_3->setStyleSheet("background-color: rgba(27, 29, 35, 150); border-top: 1px solid rgba(100, 100, 168, 50);");
-        }; break;
-        case 3:
-        {
-            ui_settings->frame_main->setStyleSheet("QFrame {background-color: rgb(220, 220, 220);} QLineEdit {color: rgb(98, 103, 111); "
-                                                   "background-color: rgb(27, 29, 35); border-radius: 0px; border: 2px solid rgb(27, 29, 35); "
-                                                   "padding-left: 10px;} QLineEdit:hover {border: 2px solid rgb(64, 71, 88);} "
-                                                   "QLineEdit:focus {border: 2px solid rgb(91, 101, 124);} QCheckBox {spacing: 12px; "
-                                                   "color: rgb(255, 255, 255); background-color: transparent;} QCheckBox::indicator {border: "
-                                                   "2px solid #5A5A5A; background: none; width: 12px; height: 12px;} QCheckBox::indicator:checked "
-                                                   "{image: url(:/16x16/icons/16x16/cil-check-alt.png); border: 2px solid #5A5A5A; background: none; "
-                                                   "width: 12px; height: 12px;}");
-            ui_settings->frame->setStyleSheet("background-color: rgb(220, 220, 220);");
-            ui_settings->label_temp->setStyleSheet("QLabel {color: rgb(3, 3, 5);}");
-            ui_settings->label_output->setStyleSheet("QLabel {color: rgb(3, 3, 5);}");
-            ui_settings->label_sec->setStyleSheet("QLabel {color: rgb(3, 3, 5);}");
-            ui_settings->label_theme->setStyleSheet("QLabel {color: rgb(3, 3, 5);}");
-            ui_settings->checkBox_1->setStyleSheet("color: rgb(3, 3, 5);");
-            ui_settings->checkBox_3->setStyleSheet("color: rgb(3, 3, 5);");
-            ui_settings->frame_3->setStyleSheet("background-color: rgba(27, 29, 35, 120); border-top: 1px solid rgba(100, 100, 168, 50);");
-        }; break;
-    }
 }
 
 bool Settings::eventFilter(QObject *watched, QEvent *event)
@@ -434,8 +350,8 @@ bool Settings::eventFilter(QObject *watched, QEvent *event)
                 {
                     int deltaX = mouse_event->globalPos().x() - mouseClickCoordinate.x();
                     int deltaY = mouse_event->globalPos().y() - mouseClickCoordinate.y();
-                    int deltaWidth = (int)mouse_event->localPos().x() - mouseClickCoordinate.x();
-                    int deltaHeight = (int)mouse_event->localPos().y() - mouseClickCoordinate.y();
+                    int deltaWidth = static_cast<int>(mouse_event->localPos().x()) - mouseClickCoordinate.x();
+                    int deltaHeight = static_cast<int>(mouse_event->localPos().y()) - mouseClickCoordinate.y();
                     if (clickPressed_Left_ResizeFlag == true)
                     {
                         this->setGeometry(deltaX, _posY, this->width() - deltaWidth, _height);
@@ -510,7 +426,4 @@ bool Settings::eventFilter(QObject *watched, QEvent *event)
     }
     return QDialog::eventFilter(watched, event);
 }
-
-
-
 

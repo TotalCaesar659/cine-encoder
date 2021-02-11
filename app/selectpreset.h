@@ -9,6 +9,9 @@
 #include <QMessageBox>
 #include <iostream>
 
+extern QVector <QVector <QString> > _preset_table;
+extern QString _cur_param[23];
+
 namespace Ui
 {
 class SelectPreset;
@@ -25,7 +28,7 @@ public:
 
     ~SelectPreset();
 
-    void setParameters(int *ptr_pos_top, int *ptr_pos_cld, int *ptr_theme);
+    void setParameters(int *ptr_pos_top, int *ptr_pos_cld);
 
 private slots:
 
@@ -58,8 +61,6 @@ private:
     int *_ptr_pos_top;
 
     int *_ptr_pos_cld;
-
-    int *_ptr_theme;
 
     bool _expandWindowsState = false;
 
@@ -94,8 +95,6 @@ private:
     bool call_dialog(const QString &_message);
 
     void call_task_complete(const QString &_message, const bool &timer_mode);
-
-    void setTheme(int &ind_theme);
 };
 
 #endif // SELECTPRESET_H

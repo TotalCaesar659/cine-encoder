@@ -1,5 +1,15 @@
-﻿#ifndef _UNICODE
-#define _UNICODE
+﻿#ifdef Q_OS_WIN
+    #ifdef __MINGW32__
+        #ifdef _UNICODE
+            #define _itot _itow
+        #else
+            #define _itot itoa
+        #endif
+    #endif
+#else
+    #ifndef UNICODE
+    #define UNICODE
+    #endif
 #endif
 
 #include "mainwindow.h"
@@ -10,23 +20,7 @@
 #include "selectpreset.h"
 #include "taskcomplete.h"
 #include "dialog.h"
-//#include "MediaInfoDLL/MediaInfoDLL.h"
-#include <MediaInfo/MediaInfo.h>
 
-#ifdef __MINGW32__
-    #ifdef _UNICODE
-        #define _itot _itow
-    #else //_UNICODE
-        #define _itot itoa
-    #endif //_UNICODE
-#endif //__MINGW32
-
-//using namespace MediaInfoDLL;
-using namespace MediaInfoLib;
-
-
-extern QString _cur_param[23];
-extern QVector <QVector <QString> > _preset_table;
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -36,10 +30,12 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     this->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
     this->setMouseTracking(true);
+    this->setAcceptDrops(true);
 }
 
 MainWindow::~MainWindow()
 {
+    delete raiseLayout;
     delete ui;
 }
 
@@ -55,14 +51,26 @@ void MainWindow::showEvent(QShowEvent *event)   //************** Call set parame
 
 void MainWindow::setParameters()    //***************************** Set parameters ******************//
 {
+    // **************************** Set front label ***********************************//
+
+    raiseThumb->setAlignment(Qt::AlignCenter);
+    raiseThumb->setPixmap(QPixmap(":/icons/images/logo.png"));
+    ui->tableWidget->setLayout(raiseLayout);
+    raiseLayout->addWidget(raiseThumb);
+
+    // ***************************** Set parameters ***********************************//
+
     ui->frame_hint->installEventFilter(this);
     ui->centralwidget->installEventFilter(this);
+    raiseThumb->installEventFilter(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(repeat_handler()));
     _preset_table.resize(24);
     for (int i = 0; i < 24; i++) {
       _preset_table[i].resize(5);
     }
+
     // ***************************** Top menu actions ***********************************//
+
     connect(add_files, &QAction::triggered, this, &MainWindow::on_actionAdd_clicked);
     connect(remove_files, &QAction::triggered, this, &MainWindow::on_actionRemove_clicked);
     connect(close_prog, &QAction::triggered, this, &MainWindow::on_closeWindow_clicked);
@@ -106,15 +114,16 @@ void MainWindow::setParameters()    //***************************** Set paramete
                              "QMenu::item {color: rgb(255, 255, 255); background-color: transparent;} "
                              "QMenu::item:selected {background-color: rgb(5, 40, 45);}");
     ui->menuAboutButton->setMenu(menuAbout);
-    // *********************************************************************************//
+
+    // ****************************** Initialize variables ************************************//
 
     QDesktopWidget *screenSize = QApplication::desktop();
     int screenWidth = screenSize->width();
     int screenHeight = screenSize->height();
     int widthMainWindow = 1024;
     int heightMainWindow = 670;
-    int x_pos = static_cast<int>((float)(screenWidth - widthMainWindow)/2);
-    int y_pos = static_cast<int>((float)(screenHeight - heightMainWindow)/2);
+    int x_pos = static_cast<int>(round(static_cast<float>(screenWidth - widthMainWindow)/2));
+    int y_pos = static_cast<int>(round(static_cast<float>(screenHeight - heightMainWindow)/2));
     bool expandFlag = false;
     mouseClickCoordinate.setX(0);
     mouseClickCoordinate.setY(0);
@@ -140,48 +149,55 @@ void MainWindow::setParameters()    //***************************** Set paramete
     ui->label_54->hide();
     ui->label_55->hide();
     ui->progressBar->hide();
+    ui->tableWidget->setRowCount(0);
+    ui->tableWidget->horizontalHeader()->setVisible(true);
     ui->tableWidget->verticalHeader()->setFixedWidth(0);
     ui->tableWidget->setColumnWidth(0, 250);
     ui->tableWidget->setColumnWidth(1, 80);
     ui->tableWidget->setColumnWidth(2, 85);
-    ui->tableWidget->resizeColumnToContents(3);
+    ui->tableWidget->setColumnWidth(3, 70);
     ui->tableWidget->setColumnWidth(4, 70);
     ui->tableWidget->setColumnWidth(5, 60);
     ui->tableWidget->setColumnWidth(6, 80);
-    int i = 7;
-    while (i <= 35) {
-        ui->tableWidget->resizeColumnToContents(i);
+    int i = 11;
+    while (i <= 18) {
+        ui->tableWidget->setColumnWidth(i, 82);
         i++;
-    };
+    }
     i = 7;
     while (i <= 10) {
         ui->tableWidget->hideColumn(i);
         i++;
-    };
+    }
     i = 21;
     while (i <= 35) {
         ui->tableWidget->hideColumn(i);
         i++;
-    };
-    ui->tableWidget->setRowCount(0);
+    }
     process_1->setProcessChannelMode(QProcess::MergedChannels);
     process_1->setWorkingDirectory(QDir::homePath());
+
+    // ****************************** Create folders ************************************//
+
     if (!QDir(_settings_path).exists()) {
         QDir().mkdir(_settings_path);
         std::cout << "Setting path not existed and was created ..." << std::endl;  // Debug info //
-    };
+    }
     if (QDir(_thumb_path).exists()) {
         unsigned int count_thumb = QDir(_thumb_path).count();
         std::cout << "Number of thumbnails: " << count_thumb << std::endl; // Debug info //
         if (count_thumb > 200) {
             QDir(_thumb_path).removeRecursively();
             std::cout << "Thumbnails removed... " << std::endl; // Debug info //
-        };
-    };
+        }
+    }
     if (!QDir(_thumb_path).exists()) {
         QDir().mkdir(_thumb_path);
         std::cout << "Thumbnail path not existed and was created ..." << std::endl;  // Debug info //
-    };
+    }
+
+    // ****************************** Read the files ************************************//
+
     _stn_file.setFileName(_settings_file);
     _prs_file.setFileName(_preset_file);
     _wind_file.setFileName(_window_file);
@@ -211,7 +227,6 @@ void MainWindow::setParameters()    //***************************** Set paramete
                 }
                 timer->setInterval(_timer_interval*1000);
                 _theme = (line[6].replace("theme:", "").replace("\n", "")).toInt();
-                setTheme(_theme);
             } else {
                 std::cout << "Setting file error, not enough parameters!!! " << std::endl;  // Debug info //
             };
@@ -311,6 +326,7 @@ void MainWindow::setParameters()    //***************************** Set paramete
     } else {
         std::cout << "Window settings file not exist ..." << std::endl;  // Debug info //
     }
+    setTheme(_theme);
     if (expandFlag == true) {
         on_expandWindow_clicked();
     } else {
@@ -410,14 +426,21 @@ void MainWindow::on_hideWindow_clicked()
 
 void MainWindow::on_actionAdd_clicked() //**************************** Add files ********************//
 {
-    ui->label_53->hide();
-    ui->label_54->hide();
-    ui->label_55->hide();
-    ui->progressBar->hide();
     QFileDialog *openFilesWindow = new QFileDialog(this);
-    //openFilesWindow->setOptions(QFileDialog::DontUseNativeDialog | QFileDialog::DontResolveSymlinks);
+#ifdef Q_OS_WIN
     openFilesWindow->setOptions(QFileDialog::DontResolveSymlinks);
+#else
+    //openFilesWindow->setOptions(QFileDialog::DontResolveSymlinks);
+    openFilesWindow->setOptions(QFileDialog::DontUseNativeDialog | QFileDialog::DontResolveSymlinks);
+#endif
     openFilesWindow->setFileMode(QFileDialog::ExistingFiles);
+    openFilesWindow->setStyleSheet("QWidget {color: rgb(10, 10, 10); background-color: "
+                                   "rgb(210, 210, 210);} QHeaderView {color: rgb(10, 10, 10); "
+                                   "background-color: transparent;} QHeaderView::section:horizontal "
+                                   "{height: 20px; padding: 0px; border: 1px solid rgb(160, 160, 160); "
+                                   "border-top-left-radius: 0px; border-top-right-radius: 0px; "
+                                   "background-color: rgb(160, 160, 160);} QScrollBar {background-color: "
+                                   "rgb(160, 160, 160);}");
     openFilesWindow->setDirectory(_openDir);
     openFilesWindow->setMinimumWidth(600);
     openFilesWindow->setWindowTitle("Open Files");
@@ -427,212 +450,255 @@ void MainWindow::on_actionAdd_clicked() //**************************** Add files
     openFilesWindow->setWindowFlags(Qt::Dialog | Qt::SubWindow);
     openFilesWindow->exec();
     int res = openFilesWindow->result();
-    QStringList file_name_open;
-    file_name_open = openFilesWindow->selectedFiles();
+    const QStringList file_name_open = openFilesWindow->selectedFiles();
     delete openFilesWindow;
     if (res == 0) {
         return;
     } else {
-        MediaInfo MI;
-        int i = 1;
-        unsigned long sep = 0;
-        int count = file_name_open.size();
-        while (i <= count) {
-            int numRows = ui->tableWidget->rowCount();
-            ui->tableWidget->setRowCount(numRows + 1);
-            QString file_qstr = file_name_open.at(i-1);
-            std::wstring file_wstr = file_qstr.toStdWString();
-            sep = file_wstr.rfind('/');
-            std::wstring folder_input_str = file_wstr.substr(0, sep);
-            std::wstring file_input_str = file_wstr.substr(sep+1);
-            QString folder_input = QString::fromStdWString(folder_input_str);
-            if (i == 1) {
-                _openDir = folder_input;
-            }
-            QString file_input = QString::fromStdWString(file_input_str);
-            QTableWidgetItem *newItem_file = new QTableWidgetItem(file_input);
-            ui->tableWidget->setItem(numRows, 0, newItem_file);
-            QTableWidgetItem *newItem_folder = new QTableWidgetItem(folder_input);
-            ui->tableWidget->setItem(numRows, 20, newItem_folder);
-            MI.Open(file_wstr);
-            std::wstring fmt_wstr = MI.Get(Stream_Video, 0, L"Format");
-            std::wstring stream_size_wstr = MI.Get(Stream_Video, 0, L"StreamSize");
-            std::wstring dur_wstr = MI.Get(Stream_Video, 0, L"Duration");
-            std::wstring aspect_ratio_wstr = MI.Get(Stream_Video, 0, L"DisplayAspectRatio");
-            std::wstring color_space_wstr = MI.Get(Stream_Video, 0, L"ColorSpace");
-            std::wstring bit_depth_wstr = MI.Get(Stream_Video, 0, L"BitDepth");
-            std::wstring width_wstr = MI.Get(Stream_Video, 0, L"Width");
-            std::wstring height_wstr = MI.Get(Stream_Video, 0, L"Height");
-            std::wstring fps_wstr = MI.Get(Stream_Video, 0, L"FrameRate");
-            std::wstring chroma_subsampling_wstr = MI.Get(Stream_Video, 0, L"ChromaSubsampling");
-            std::wstring bitrate_wstr = MI.Get(Stream_Video, 0, L"BitRate");
-            std::wstring color_range_wstr = MI.Get(Stream_Video, 0, L"colour_range");
-            std::wstring color_primaries_wstr = MI.Get(Stream_Video, 0, L"colour_primaries");
-            std::wstring matrix_coefficients_wstr = MI.Get(Stream_Video, 0, L"matrix_coefficients");
-            std::wstring transfer_characteristics_wstr = MI.Get(Stream_Video, 0, L"transfer_characteristics");
-            std::wstring mastering_display_luminance_wstr = MI.Get(Stream_Video, 0, L"MasteringDisplay_Luminance");
-            std::wstring maxCll_wstr = MI.Get(Stream_Video, 0, L"MaxCLL");
-            std::wstring maxFall_wstr = MI.Get(Stream_Video, 0, L"MaxFALL");
-            std::wstring mastering_display_color_primaries_wstr = MI.Get(Stream_Video, 0, L"MasteringDisplay_ColorPrimaries");
-            int dur_int = 0;
-            try {
-                dur_int = int(0.001 * std::stoi(dur_wstr));
-            }  catch (...) {
-                std::cout << "No duration info!" << std::endl;
-            };
-            int h = static_cast<int>(trunc(dur_int / 3600));
-            int m = static_cast<int>(trunc((dur_int - (h * 3600)) / 60));
-            int s = static_cast<int>(trunc(dur_int - (h * 3600) - (m * 60)));
-            QString hrs = QString::number(h);
-            QString min = QString::number(m);
-            QString sec = QString::number(s);
-            std::ostringstream sstr;
-            sstr << std::setw(2) << std::setfill('0') << hrs.toStdString() << ":"
-                 << std::setw(2) << std::setfill('0') << min.toStdString() << ":"
-                 << std::setw(2) << std::setfill('0') << sec.toStdString();
-            std::string tm = sstr.str();
-            int bit_rate = 0;
-            try {
-                bit_rate = int(0.001 * std::stoi(bitrate_wstr));
-            }  catch (...) {
-                std::cout << "No bitrate info!" << std::endl;
-            };
-            QString dur_qstr = QString::number(dur_int);
-            QString stream_size_qstr = QString::fromStdWString(stream_size_wstr);
-            QString mastering_display_luminance_qstr = QString::fromStdWString(mastering_display_luminance_wstr);
-            QString mastering_display_luminance_rep = mastering_display_luminance_qstr.replace("min: ", "").replace("max: ", "").replace(" cd/m2", "");
-            QString min_luminance = mastering_display_luminance_rep.split(", ")[0];
-            QString max_luminance = mastering_display_luminance_rep.replace(min_luminance, "").replace(", ", "");
-            QString color_primaries = QString::fromStdWString(color_primaries_wstr);
-            QString matrix_coefficients = QString::fromStdWString(matrix_coefficients_wstr);
-            QString transfer_characteristics = QString::fromStdWString(transfer_characteristics_wstr);
-            QString mastering_display_color_primaries = QString::fromStdWString(mastering_display_color_primaries_wstr);
-            QString color_range = QString::fromStdWString(color_range_wstr);
-            QString maxCll = QString::fromStdWString(maxCll_wstr);
-            QString maxFall = QString::fromStdWString(maxFall_wstr);
-            QString width_qstr = QString::fromStdWString(width_wstr);
-            QString height_qstr = QString::fromStdWString(height_wstr);
-            QString h_qstr = QString::number(h);
-            QString m_qstr = QString::number(m);
-            QString s_qstr = QString::number(s);
-            QString chroma_subsampling = QString::fromStdWString(chroma_subsampling_wstr);
-            QString bit_rate_qstr = QString::number(bit_rate);
-            QString aspect_ratio = QString::fromStdWString(aspect_ratio_wstr);
-            QString color_space = QString::fromStdWString(color_space_wstr);
-            QString bit_depth = QString::fromStdWString(bit_depth_wstr);
-            QString fmt_qstr = QString::fromStdWString(fmt_wstr);
-            QString fps_qstr = QString::fromStdWString(fps_wstr);
-            QString size = width_qstr + "x" + height_qstr;
-            if (fmt_qstr == "") {
-                fmt_qstr = "Undef";
-            }
-            if (fps_qstr == "") {
-                fps_qstr = "Undef";
-            }
-            if (width_qstr == "") {
-                size = "Undef";
-            }
-            if (tm == "00:00:00") {
-                tm = "Undef";
-            }
-            QTableWidgetItem *newItem_fmt = new QTableWidgetItem(fmt_qstr);
-            ui->tableWidget->setItem(numRows, 1, newItem_fmt);
-            QTableWidgetItem *newItem_resolution = new QTableWidgetItem(size);
-            ui->tableWidget->setItem(numRows, 2, newItem_resolution);
-            QTableWidgetItem *newItem_duration = new QTableWidgetItem(QString::fromStdString(tm));
-            ui->tableWidget->setItem(numRows, 3, newItem_duration);
-            QTableWidgetItem *newItem_fps = new QTableWidgetItem(fps_qstr);
-            ui->tableWidget->setItem(numRows, 4, newItem_fps);
-            QTableWidgetItem *newItem_aspect_ratio = new QTableWidgetItem(aspect_ratio);
-            ui->tableWidget->setItem(numRows, 5, newItem_aspect_ratio);
-            QTableWidgetItem *newItem_bitrate = new QTableWidgetItem(bit_rate_qstr);
-            ui->tableWidget->setItem(numRows, 7, newItem_bitrate);
-            QTableWidgetItem *newItem_subsampling = new QTableWidgetItem(chroma_subsampling);
-            ui->tableWidget->setItem(numRows, 8, newItem_subsampling);
-            QTableWidgetItem *newItem_bit_depth = new QTableWidgetItem(bit_depth);
-            ui->tableWidget->setItem(numRows, 9, newItem_bit_depth);
-            QTableWidgetItem *newItem_color_space = new QTableWidgetItem(color_space);
-            ui->tableWidget->setItem(numRows, 10, newItem_color_space);
-            QTableWidgetItem *newItem_color_range = new QTableWidgetItem(color_range);
-            ui->tableWidget->setItem(numRows, 11, newItem_color_range);
-            QTableWidgetItem *newItem_color_primaries = new QTableWidgetItem(color_primaries.replace(".", ""));
-            ui->tableWidget->setItem(numRows, 12, newItem_color_primaries);
-            QTableWidgetItem *newItem_color_matrix = new QTableWidgetItem(matrix_coefficients.replace(" ", "").replace(".", "").replace("on-", "").replace("onstant", ""));
-            ui->tableWidget->setItem(numRows, 13, newItem_color_matrix);
-            QTableWidgetItem *newItem_transfer_characteristics = new QTableWidgetItem(transfer_characteristics.replace(".", ""));
-            ui->tableWidget->setItem(numRows, 14, newItem_transfer_characteristics);
-            QTableWidgetItem *newItem_max_lum = new QTableWidgetItem(max_luminance);
-            ui->tableWidget->setItem(numRows, 15, newItem_max_lum);
-            QTableWidgetItem *newItem_min_lum = new QTableWidgetItem(min_luminance);
-            ui->tableWidget->setItem(numRows, 16, newItem_min_lum);
-            QTableWidgetItem *newItem_max_cll = new QTableWidgetItem(maxCll.replace(" cd/m2", ""));
-            ui->tableWidget->setItem(numRows, 17, newItem_max_cll);
-            QTableWidgetItem *newItem_max_fall = new QTableWidgetItem(maxFall.replace(" cd/m2", ""));
-            ui->tableWidget->setItem(numRows, 18, newItem_max_fall);
-            int len = mastering_display_color_primaries.length();
-            if (len > 15) {
-                QStringList mdcp = mastering_display_color_primaries.split(",");
-                QString r = mdcp[0].replace("R: ", "").replace("x=", "").replace(" ", ",").replace("y=", "").replace("000", "0");
-                QString g = mdcp[1].replace(" G: ", "").replace("x=", "").replace(" ", ",").replace("y=", "").replace("000", "0");
-                QString b = mdcp[2].replace(" B: ", "").replace("x=", "").replace(" ", ",").replace("y=", "").replace("000", "0");
-                QString white_coord = mdcp[3].replace(" White point: ", "").replace("x=", "").replace(" ", ",").replace("y=", "").replace("000", "0");
-                QString chr_coord = r + "," + g + "," + b;
-                QTableWidgetItem *newItem_mastering_display = new QTableWidgetItem("Undefined");
-                ui->tableWidget->setItem(numRows, 19, newItem_mastering_display);
-                QTableWidgetItem *newItem_chr_coord = new QTableWidgetItem(chr_coord);
-                ui->tableWidget->setItem(numRows, 22, newItem_chr_coord);
-                QTableWidgetItem *newItem_white_coord = new QTableWidgetItem(white_coord);
-                ui->tableWidget->setItem(numRows, 23, newItem_white_coord);
-            } else {
-                QTableWidgetItem *newItem_mastering_display = new QTableWidgetItem(mastering_display_color_primaries);
-                ui->tableWidget->setItem(numRows, 19, newItem_mastering_display);
-                QTableWidgetItem *newItem_chr_coord = new QTableWidgetItem("");
-                ui->tableWidget->setItem(numRows, 22, newItem_chr_coord);
-                QTableWidgetItem *newItem_white_coord = new QTableWidgetItem("");
-                ui->tableWidget->setItem(numRows, 23, newItem_white_coord);
-            };
-            QTableWidgetItem *newItem_dur = new QTableWidgetItem(dur_qstr);
-            ui->tableWidget->setItem(numRows, 21, newItem_dur);
-            QTableWidgetItem *newItem_stream_size = new QTableWidgetItem(stream_size_qstr);
-            ui->tableWidget->setItem(numRows, 24, newItem_stream_size);
-            QTableWidgetItem *newItem_width = new QTableWidgetItem(width_qstr);
-            ui->tableWidget->setItem(numRows, 25, newItem_width);
-            QTableWidgetItem *newItem_height = new QTableWidgetItem(height_qstr);
-            ui->tableWidget->setItem(numRows, 26, newItem_height);
-            int j = 0;
-            int smplrt_int = 0;
-            std::wstring format_wstr;
-            std::wstring smplrt_wstr;
-            QString format;
-            QString smplrt = "";
-            while (j <= 8) {
-                format_wstr = MI.Get(Stream_Audio, size_t(j), L"Format");
-                smplrt_wstr = MI.Get(Stream_Audio, size_t(j), L"SamplingRate");
-                format = QString::fromStdWString(format_wstr);
-                try {
-                    smplrt_int = int(std::stoi(smplrt_wstr) / 1000);
-                }  catch (...) {
-                    smplrt_int = 0;
-                };
-                if (smplrt_int != 0) {
-                    smplrt = QString::number(smplrt_int);
-                } else {
-                    smplrt = "";
-                };
-                if (format != "") {
-                    QTableWidgetItem *newItem_audio = new QTableWidgetItem(format + "  " + smplrt + " kHz");
-                    ui->tableWidget->setItem(numRows, j + 27, newItem_audio);
-                } else {
-                    QTableWidgetItem *newItem_audio = new QTableWidgetItem("");
-                    ui->tableWidget->setItem(numRows, j + 27, newItem_audio);
-                };
-                j++;
-            };
-            i++;
+        openFiles(file_name_open);
+    }
+}
+
+void MainWindow::openFiles(const QStringList &file_name_open)
+{
+    ui->label_53->hide();
+    ui->label_54->hide();
+    ui->label_55->hide();
+    ui->progressBar->hide();
+    MediaInfo MI;
+    int i = 1;
+    unsigned long sep = 0;
+    int count = file_name_open.size();
+    while (i <= count) {
+        int numRows = ui->tableWidget->rowCount();
+        ui->tableWidget->setRowCount(numRows + 1);
+        QString file_qstr = file_name_open.at(i-1);
+        std::wstring file_wstr = file_qstr.toStdWString();
+        sep = file_wstr.rfind('/');
+        std::wstring folder_input_str = file_wstr.substr(0, sep);
+        std::wstring file_input_str = file_wstr.substr(sep+1);
+        QString folder_input = QString::fromStdWString(folder_input_str);
+        if (i == 1) {
+            _openDir = folder_input;
+        }
+        QString file_input = QString::fromStdWString(file_input_str);
+        QTableWidgetItem *newItem_file = new QTableWidgetItem(file_input);
+        ui->tableWidget->setItem(numRows, 0, newItem_file);
+        QTableWidgetItem *newItem_folder = new QTableWidgetItem(folder_input);
+        ui->tableWidget->setItem(numRows, 20, newItem_folder);
+        MI.Open(file_wstr);
+        std::wstring fmt_wstr = MI.Get(Stream_Video, 0, L"Format");
+        std::wstring stream_size_wstr = MI.Get(Stream_Video, 0, L"StreamSize");
+        std::wstring dur_wstr = MI.Get(Stream_Video, 0, L"Duration");
+        std::wstring aspect_ratio_wstr = MI.Get(Stream_Video, 0, L"DisplayAspectRatio");
+        std::wstring color_space_wstr = MI.Get(Stream_Video, 0, L"ColorSpace");
+        std::wstring bit_depth_wstr = MI.Get(Stream_Video, 0, L"BitDepth");
+        std::wstring width_wstr = MI.Get(Stream_Video, 0, L"Width");
+        std::wstring height_wstr = MI.Get(Stream_Video, 0, L"Height");
+        std::wstring fps_wstr = MI.Get(Stream_Video, 0, L"FrameRate");
+        std::wstring chroma_subsampling_wstr = MI.Get(Stream_Video, 0, L"ChromaSubsampling");
+        std::wstring bitrate_wstr = MI.Get(Stream_Video, 0, L"BitRate");
+        std::wstring color_range_wstr = MI.Get(Stream_Video, 0, L"colour_range");
+        std::wstring color_primaries_wstr = MI.Get(Stream_Video, 0, L"colour_primaries");
+        std::wstring matrix_coefficients_wstr = MI.Get(Stream_Video, 0, L"matrix_coefficients");
+        std::wstring transfer_characteristics_wstr = MI.Get(Stream_Video, 0, L"transfer_characteristics");
+        std::wstring mastering_display_luminance_wstr = MI.Get(Stream_Video, 0, L"MasteringDisplay_Luminance");
+        std::wstring maxCll_wstr = MI.Get(Stream_Video, 0, L"MaxCLL");
+        std::wstring maxFall_wstr = MI.Get(Stream_Video, 0, L"MaxFALL");
+        std::wstring mastering_display_color_primaries_wstr = MI.Get(Stream_Video, 0, L"MasteringDisplay_ColorPrimaries");
+        int dur_int = 0;
+        try {
+            dur_int = int(0.001 * std::stoi(dur_wstr));
+        }  catch (...) {
+            std::cout << "No duration info!" << std::endl;
         };
-        MI.Close();
-        ui->tableWidget->selectRow(0);
-    };
+        int h = static_cast<int>(trunc(dur_int / 3600));
+        int m = static_cast<int>(trunc((dur_int - (h * 3600)) / 60));
+        int s = static_cast<int>(trunc(dur_int - (h * 3600) - (m * 60)));
+        QString hrs = QString::number(h);
+        QString min = QString::number(m);
+        QString sec = QString::number(s);
+        std::ostringstream sstr;
+        sstr << std::setw(2) << std::setfill('0') << hrs.toStdString() << ":"
+             << std::setw(2) << std::setfill('0') << min.toStdString() << ":"
+             << std::setw(2) << std::setfill('0') << sec.toStdString();
+        std::string tm = sstr.str();
+        int bit_rate = 0;
+        try {
+            bit_rate = int(0.001 * std::stoi(bitrate_wstr));
+        }  catch (...) {
+            std::cout << "No bitrate info!" << std::endl;
+        };
+        QString dur_qstr = QString::number(dur_int);
+        QString stream_size_qstr = QString::fromStdWString(stream_size_wstr);
+        QString mastering_display_luminance_qstr = QString::fromStdWString(mastering_display_luminance_wstr);
+        QString mastering_display_luminance_rep = mastering_display_luminance_qstr.replace("min: ", "").replace("max: ", "").replace(" cd/m2", "");
+        QString min_luminance = mastering_display_luminance_rep.split(", ")[0];
+        QString max_luminance = mastering_display_luminance_rep.replace(min_luminance, "").replace(", ", "");
+        QString color_primaries = QString::fromStdWString(color_primaries_wstr);
+        QString matrix_coefficients = QString::fromStdWString(matrix_coefficients_wstr);
+        QString transfer_characteristics = QString::fromStdWString(transfer_characteristics_wstr);
+        QString mastering_display_color_primaries = QString::fromStdWString(mastering_display_color_primaries_wstr);
+        QString color_range = QString::fromStdWString(color_range_wstr);
+        QString maxCll = QString::fromStdWString(maxCll_wstr);
+        QString maxFall = QString::fromStdWString(maxFall_wstr);
+        QString width_qstr = QString::fromStdWString(width_wstr);
+        QString height_qstr = QString::fromStdWString(height_wstr);
+        QString h_qstr = QString::number(h);
+        QString m_qstr = QString::number(m);
+        QString s_qstr = QString::number(s);
+        QString chroma_subsampling = QString::fromStdWString(chroma_subsampling_wstr);
+        QString bit_rate_qstr = QString::number(bit_rate);
+        QString aspect_ratio = QString::fromStdWString(aspect_ratio_wstr);
+        QString color_space = QString::fromStdWString(color_space_wstr);
+        QString bit_depth = QString::fromStdWString(bit_depth_wstr);
+        QString fmt_qstr = QString::fromStdWString(fmt_wstr);
+        QString fps_qstr = QString::fromStdWString(fps_wstr);
+        QString size = width_qstr + "x" + height_qstr;
+        if (fmt_qstr == "") {
+            fmt_qstr = "Undef";
+        }
+        if (fps_qstr == "") {
+            fps_qstr = "Undef";
+        }
+        if (width_qstr == "") {
+            size = "Undef";
+        }
+        if (tm == "00:00:00") {
+            tm = "Undef";
+        }
+        QTableWidgetItem *newItem_fmt = new QTableWidgetItem(fmt_qstr);
+        newItem_fmt->setTextAlignment(Qt::AlignCenter);
+        ui->tableWidget->setItem(numRows, 1, newItem_fmt);
+        QTableWidgetItem *newItem_resolution = new QTableWidgetItem(size);
+        newItem_resolution->setTextAlignment(Qt::AlignCenter);
+        ui->tableWidget->setItem(numRows, 2, newItem_resolution);
+        QTableWidgetItem *newItem_duration = new QTableWidgetItem(QString::fromStdString(tm));
+        newItem_duration->setTextAlignment(Qt::AlignCenter);
+        ui->tableWidget->setItem(numRows, 3, newItem_duration);
+        QTableWidgetItem *newItem_fps = new QTableWidgetItem(fps_qstr);
+        newItem_fps->setTextAlignment(Qt::AlignCenter);
+        ui->tableWidget->setItem(numRows, 4, newItem_fps);
+        QTableWidgetItem *newItem_aspect_ratio = new QTableWidgetItem(aspect_ratio);
+        newItem_aspect_ratio->setTextAlignment(Qt::AlignCenter);
+        ui->tableWidget->setItem(numRows, 5, newItem_aspect_ratio);
+        QTableWidgetItem *newItem_bitrate = new QTableWidgetItem(bit_rate_qstr);
+        newItem_bitrate->setTextAlignment(Qt::AlignCenter);
+        ui->tableWidget->setItem(numRows, 7, newItem_bitrate);
+        QTableWidgetItem *newItem_subsampling = new QTableWidgetItem(chroma_subsampling);
+        newItem_subsampling->setTextAlignment(Qt::AlignCenter);
+        ui->tableWidget->setItem(numRows, 8, newItem_subsampling);
+        QTableWidgetItem *newItem_bit_depth = new QTableWidgetItem(bit_depth);
+        newItem_bit_depth->setTextAlignment(Qt::AlignCenter);
+        ui->tableWidget->setItem(numRows, 9, newItem_bit_depth);
+        QTableWidgetItem *newItem_color_space = new QTableWidgetItem(color_space);
+        newItem_color_space->setTextAlignment(Qt::AlignCenter);
+        ui->tableWidget->setItem(numRows, 10, newItem_color_space);
+        QTableWidgetItem *newItem_color_range = new QTableWidgetItem(color_range);
+        newItem_color_range->setTextAlignment(Qt::AlignCenter);
+        ui->tableWidget->setItem(numRows, 11, newItem_color_range);
+        QTableWidgetItem *newItem_color_primaries = new QTableWidgetItem(color_primaries.replace(".", ""));
+        newItem_color_primaries->setTextAlignment(Qt::AlignCenter);
+        ui->tableWidget->setItem(numRows, 12, newItem_color_primaries);
+        QTableWidgetItem *newItem_color_matrix = new QTableWidgetItem(matrix_coefficients.replace(" ", "").replace(".", "").replace("on-", "").replace("onstant", ""));
+        newItem_color_matrix->setTextAlignment(Qt::AlignCenter);
+        ui->tableWidget->setItem(numRows, 13, newItem_color_matrix);
+        QTableWidgetItem *newItem_transfer_characteristics = new QTableWidgetItem(transfer_characteristics.replace(".", ""));
+        newItem_transfer_characteristics->setTextAlignment(Qt::AlignCenter);
+        ui->tableWidget->setItem(numRows, 14, newItem_transfer_characteristics);
+        QTableWidgetItem *newItem_max_lum = new QTableWidgetItem(max_luminance);
+        newItem_max_lum->setTextAlignment(Qt::AlignCenter);
+        ui->tableWidget->setItem(numRows, 15, newItem_max_lum);
+        QTableWidgetItem *newItem_min_lum = new QTableWidgetItem(min_luminance);
+        newItem_min_lum->setTextAlignment(Qt::AlignCenter);
+        ui->tableWidget->setItem(numRows, 16, newItem_min_lum);
+        QTableWidgetItem *newItem_max_cll = new QTableWidgetItem(maxCll.replace(" cd/m2", ""));
+        newItem_max_cll->setTextAlignment(Qt::AlignCenter);
+        ui->tableWidget->setItem(numRows, 17, newItem_max_cll);
+        QTableWidgetItem *newItem_max_fall = new QTableWidgetItem(maxFall.replace(" cd/m2", ""));
+        newItem_max_fall->setTextAlignment(Qt::AlignCenter);
+        ui->tableWidget->setItem(numRows, 18, newItem_max_fall);
+        int len = mastering_display_color_primaries.length();
+        if (len > 15) {
+            QStringList mdcp = mastering_display_color_primaries.split(",");
+            QString r = mdcp[0].replace("R: ", "").replace("x=", "").replace(" ", ",").replace("y=", "").replace("000", "0");
+            QString g = mdcp[1].replace(" G: ", "").replace("x=", "").replace(" ", ",").replace("y=", "").replace("000", "0");
+            QString b = mdcp[2].replace(" B: ", "").replace("x=", "").replace(" ", ",").replace("y=", "").replace("000", "0");
+            QString white_coord = mdcp[3].replace(" White point: ", "").replace("x=", "").replace(" ", ",").replace("y=", "").replace("000", "0");
+            QString chr_coord = r + "," + g + "," + b;
+            QTableWidgetItem *newItem_mastering_display = new QTableWidgetItem("Undefined");
+            ui->tableWidget->setItem(numRows, 19, newItem_mastering_display);
+            QTableWidgetItem *newItem_chr_coord = new QTableWidgetItem(chr_coord);
+            ui->tableWidget->setItem(numRows, 22, newItem_chr_coord);
+            QTableWidgetItem *newItem_white_coord = new QTableWidgetItem(white_coord);
+            ui->tableWidget->setItem(numRows, 23, newItem_white_coord);
+        } else {
+            QTableWidgetItem *newItem_mastering_display = new QTableWidgetItem(mastering_display_color_primaries);
+            ui->tableWidget->setItem(numRows, 19, newItem_mastering_display);
+            QTableWidgetItem *newItem_chr_coord = new QTableWidgetItem("");
+            ui->tableWidget->setItem(numRows, 22, newItem_chr_coord);
+            QTableWidgetItem *newItem_white_coord = new QTableWidgetItem("");
+            ui->tableWidget->setItem(numRows, 23, newItem_white_coord);
+        };
+        QTableWidgetItem *newItem_dur = new QTableWidgetItem(dur_qstr);
+        ui->tableWidget->setItem(numRows, 21, newItem_dur);
+        QTableWidgetItem *newItem_stream_size = new QTableWidgetItem(stream_size_qstr);
+        ui->tableWidget->setItem(numRows, 24, newItem_stream_size);
+        QTableWidgetItem *newItem_width = new QTableWidgetItem(width_qstr);
+        ui->tableWidget->setItem(numRows, 25, newItem_width);
+        QTableWidgetItem *newItem_height = new QTableWidgetItem(height_qstr);
+        ui->tableWidget->setItem(numRows, 26, newItem_height);
+
+        if (mastering_display_color_primaries != "")
+        {
+            newItem_file->setIcon(QIcon(":/16x16/icons/16x16/cil-hdr.png"));
+        }
+        else if (height_qstr.toInt() >= 720 && height_qstr.toInt() < 2160)
+        {
+            newItem_file->setIcon(QIcon(":/16x16/icons/16x16/cil-hd.png"));
+        }
+        else if (height_qstr.toInt() >= 2160)
+        {
+            newItem_file->setIcon(QIcon(":/16x16/icons/16x16/cil-4k.png"));
+        }
+        else
+        {
+            newItem_file->setIcon(QIcon(":/16x16/icons/16x16/cil-camera-roll.png"));
+        }
+
+        int j = 0;
+        int smplrt_int = 0;
+        std::wstring format_wstr;
+        std::wstring smplrt_wstr;
+        QString format;
+        QString smplrt = "";
+        while (j <= 8) {
+            format_wstr = MI.Get(Stream_Audio, size_t(j), L"Format");
+            smplrt_wstr = MI.Get(Stream_Audio, size_t(j), L"SamplingRate");
+            format = QString::fromStdWString(format_wstr);
+            try {
+                smplrt_int = int(std::stoi(smplrt_wstr) / 1000);
+            }  catch (...) {
+                smplrt_int = 0;
+            };
+            if (smplrt_int != 0) {
+                smplrt = QString::number(smplrt_int);
+            } else {
+                smplrt = "";
+            };
+            if (format != "") {
+                QTableWidgetItem *newItem_audio = new QTableWidgetItem(format + "  " + smplrt + " kHz");
+                ui->tableWidget->setItem(numRows, j + 27, newItem_audio);
+            } else {
+                QTableWidgetItem *newItem_audio = new QTableWidgetItem("");
+                ui->tableWidget->setItem(numRows, j + 27, newItem_audio);
+            }
+            j++;
+        }
+        i++;
+    }
+    MI.Close();
+    ui->tableWidget->selectRow(0);
 }
 
 void MainWindow::on_actionRemove_clicked()  //******************* Remove file from table ************//
@@ -645,10 +711,16 @@ void MainWindow::on_actionRemove_clicked()  //******************* Remove file fr
 
 void MainWindow::on_tableWidget_itemSelectionChanged()  //******* Item selection changed ************//
 {
+    ui->label_53->hide();
+    ui->label_54->hide();
+    ui->label_55->hide();
+    ui->progressBar->hide();
     _row = ui->tableWidget->currentRow();
     if (_row != -1) {
+        raiseThumb->hide();
         get_current_data();
     } else {
+        raiseThumb->show();
         ui->labelThumb->clear();
         ui->labelThumb->setText("Preview");
         ui->label_source->setText("");
@@ -701,9 +773,9 @@ void MainWindow::make_preset()  //*********************************** Make prese
     int p21 = _cur_param[21].toInt();       //p21 - int acodec
     int p22 = _cur_param[22].toInt();       //p22 - int abitrate
 
-    QTableWidgetItem *newItem_status = new QTableWidgetItem("");
+    QTableWidgetItem *newItem_status = new QTableWidgetItem("Encoding");
+    newItem_status->setTextAlignment(Qt::AlignCenter);
     ui->tableWidget->setItem(_row, 6, newItem_status);
-
 
     _preset_0 = "";
     _preset_pass1 = "";
@@ -1218,18 +1290,18 @@ void MainWindow::make_preset()  //*********************************** Make prese
         std::cout << "preset_pass1: " << _preset_pass1.toStdString() << std::endl;
         std::cout << "preset: " << _preset.toStdString() << std::endl;
         std::cout << "preset_mkvpropedit: " << _preset_mkvmerge.toStdString() << std::endl;
-    };
+    }
     if ((_flag_two_pass == true) && (_flag_hdr == false)) {
         std::cout << "preset_pass1: " << _preset_pass1.toStdString() << std::endl;
         std::cout << "preset: " << _preset.toStdString() << std::endl;
-    };
+    }
     if ((_flag_two_pass == false) && (_flag_hdr == true)) {
         std::cout << "preset: " << _preset.toStdString() << std::endl;
         std::cout << "preset_mkvpropedit: " << _preset_mkvmerge.toStdString() << std::endl;
-    };
+    }
     if ((_flag_two_pass == false) && (_flag_hdr == false)) {
         std::cout << "preset: " << _preset.toStdString() << std::endl;
-    };
+    }
     encode();
 }
 
@@ -1328,10 +1400,11 @@ void MainWindow::complete() //**************************************** Complete 
     std::cout << "Complete ..." << std::endl;  //  Debug info //
     process_1->disconnect();
     QTableWidgetItem *newItem_status = new QTableWidgetItem("Done!");
+    newItem_status->setTextAlignment(Qt::AlignCenter);
     ui->tableWidget->setItem(_row, 6, newItem_status);
     if (_flag_hdr == true) {
         QDir().remove(_temp_file);
-    };
+    }
     if (_batch_mode == true) {
         int row = ui->tableWidget->currentRow();
         int numRows = ui->tableWidget->rowCount();
@@ -1344,7 +1417,7 @@ void MainWindow::complete() //**************************************** Complete 
             int elps_t = static_cast<int>(end_t - _strt_t);
             if (elps_t < 0) {
                 elps_t = 0;
-            };
+            }
             int h = static_cast<int>(trunc(elps_t / 3600));
             int m = static_cast<int>(trunc((elps_t - (h * 3600)) / 60));
             int s = static_cast<int>(trunc(elps_t - (h * 3600) - (m * 60)));
@@ -1368,7 +1441,7 @@ void MainWindow::complete() //**************************************** Complete 
         int elps_t = static_cast<int>(end_t - _strt_t);
         if (elps_t < 0) {
             elps_t = 0;
-        };
+        }
         int h = static_cast<int>(trunc(elps_t / 3600));
         int m = static_cast<int>(trunc((elps_t - (h * 3600)) / 60));
         int s = static_cast<int>(trunc(elps_t - (h * 3600) - (m * 60)));
@@ -1385,7 +1458,11 @@ void MainWindow::complete() //**************************************** Complete 
         }
         _message = "Task completed!\n\n Elapsed time: " + QString::fromStdString(tm);
         call_task_complete(_message, false);
-    };
+    }
+    QDir().remove(QDir::homePath() + "/ffmpeg2pass-0.log");
+    QDir().remove(QDir::homePath() + "/ffmpeg2pass-0.log.mbtree");
+    QDir().remove(QDir::homePath() + "/x265_2pass.log");
+    QDir().remove(QDir::homePath() + "/x265_2pass.log.cutree");
 }
 
 void MainWindow::progress_1()   //*********************************** Progress 1 ********************//
@@ -1471,7 +1548,7 @@ void MainWindow::progress_2()   //*********************************** Progress 2
 void MainWindow::on_actionPreset_clicked()  // ****************** Call Preset Window *************** //
 {
     SelectPreset select_preset(this);
-    select_preset.setParameters(&_pos_top, &_pos_cld, &_theme);
+    select_preset.setParameters(&_pos_top, &_pos_cld);
     select_preset.setModal(true);
     select_preset.exec();  // ************************ Call preset window and wait for return ******** //
     if (_row != -1) {
@@ -1537,9 +1614,12 @@ void MainWindow::pause()    //***************************************** Pause **
     qint64 pr1 = process_1->processId();
     std::cout << "State procedure_1: " << s1 << " PID: " << pr1 << std::endl;
     if (s1 != 0) {
-        //_PROCESS_INFORMATION *pi = process_1->pid();  // pause for Windows
-        //SuspendThread(pi->hThread);  // pause for Windows
+#ifdef Q_OS_WIN
+        _PROCESS_INFORMATION *pi = process_1->pid();  // pause for Windows
+        SuspendThread(pi->hThread);  // pause for Windows
+#else
         kill(pid_t(process_1->processId()), SIGSTOP);  // pause for Unix
+#endif
     };
 }
 
@@ -1552,9 +1632,12 @@ void MainWindow::resume()   //***************************************** Resume *
     qint64 pr1 = process_1->processId();
     std::cout << "State procedure_1: " << s1 << " PID: " << pr1 << std::endl;
     if (s1 != 0) {
-        //_PROCESS_INFORMATION *pi = process_1->pid();  // pause for Windows
-        //ResumeThread(pi->hThread);  // pause for Windows
+#ifdef Q_OS_WIN
+        _PROCESS_INFORMATION *pi = process_1->pid();  // pause for Windows
+        ResumeThread(pi->hThread);  // pause for Windows
+#else
         kill(pid_t(process_1->processId()), SIGCONT); // resume for Unix
+#endif
     };
 }
 
@@ -1562,7 +1645,7 @@ void MainWindow::on_actionAbout_clicked()   //************************* About **
 {
     About about(this);
     about.setModal(true);
-    about.setParameters(_theme);
+    about.setParameters();
     about.exec();
 }
 
@@ -1570,7 +1653,7 @@ void MainWindow::on_actionDonate_clicked()   //************************ Donate *
 {
     Donate donate(this);
     donate.setModal(true);
-    donate.setParameters(_theme);
+    donate.setParameters();
     donate.exec();
 }
 
@@ -1615,6 +1698,9 @@ void MainWindow::cancel()   //************************************** Stop execut
         timer->stop();
     }
     process_1->disconnect();
+    QTableWidgetItem *newItem_status = new QTableWidgetItem("Stop");
+    newItem_status->setTextAlignment(Qt::AlignCenter);
+    ui->tableWidget->setItem(_row, 6, newItem_status);
     restore_initial_state();
     _message = "The current encoding process has been canceled!\n";
     call_task_complete(_message, false);
@@ -1628,6 +1714,7 @@ void MainWindow::error_1()  //***************************************** Error **
     }
     process_1->disconnect();
     QTableWidgetItem *newItem_status = new QTableWidgetItem("Error!");
+    newItem_status->setTextAlignment(Qt::AlignCenter);
     ui->tableWidget->setItem(_row, 6, newItem_status);
     restore_initial_state();
     _message = "An error occured!\n" + _error_message;
@@ -1830,7 +1917,7 @@ bool MainWindow::call_dialog(const QString &_message)  // Call dialog ******//
 {
     bool acceptFlag = false;
     Dialog dialog(this);
-    dialog.setMessage(_message, &acceptFlag, _theme);
+    dialog.setMessage(_message, &acceptFlag);
     dialog.setModal(true);
     dialog.exec();
     return acceptFlag;
@@ -1839,82 +1926,9 @@ bool MainWindow::call_dialog(const QString &_message)  // Call dialog ******//
 void MainWindow::call_task_complete(const QString &_message, const bool &_timer_mode)  // Call task complete ******//
 {
     Taskcomplete taskcomplete(this);
-    taskcomplete.setMessage(_message, _timer_mode, _theme);
+    taskcomplete.setMessage(_message, _timer_mode);
     taskcomplete.setModal(true);
     taskcomplete.exec();
-}
-
-void MainWindow::setTheme(int &ind_theme)   //********************** Set theme **********************//
-{
-    QFile file;
-    switch (ind_theme)
-    {
-        case 0:
-        {
-            file.setFileName(":/style_default.css");
-            ui->frame_main->setStyleSheet("background-color: rgb(5, 20, 28);");
-            ui->labelThumb->setStyleSheet("color: rgb(210, 210, 210); background-color: rgba(27, 29, 35, 50);");
-            ui->frame_source->setStyleSheet("background-color: rgba(27, 29, 35, 50);");
-            ui->frame_output->setStyleSheet("background-color: rgba(27, 29, 35, 50);");
-            ui->textBrowser_1->setStyleSheet("color: rgb(210, 210, 210); background-color: transparent; border: 1px solid rgba(27, 29, 35, 0);");
-            ui->textBrowser_2->setStyleSheet("color: rgb(210, 210, 210); background-color: transparent; border: 1px solid rgba(27, 29, 35, 0);");
-            ui->line_1->setStyleSheet("background-color: rgba(100, 100, 168, 50);");
-            ui->line_2->setStyleSheet("background-color: rgba(100, 100, 168, 50);");
-        }; break;
-        case 1:
-        {
-            file.setFileName(":/style_deep.css");
-            ui->frame_main->setStyleSheet("background-color: rgb(3, 3, 5);");
-            ui->labelThumb->setStyleSheet("color: rgb(210, 210, 210); background-color: rgba(27, 29, 35, 150);");
-            ui->frame_source->setStyleSheet("background-color: rgba(27, 29, 35, 150);");
-            ui->frame_output->setStyleSheet("background-color: rgba(27, 29, 35, 150);");
-            ui->textBrowser_1->setStyleSheet("color: rgb(210, 210, 210); background-color: transparent; border: 1px solid rgba(27, 29, 35, 0);");
-            ui->textBrowser_2->setStyleSheet("color: rgb(210, 210, 210); background-color: transparent; border: 1px solid rgba(27, 29, 35, 0);");
-            ui->line_1->setStyleSheet("background-color: rgb(200, 200, 200);");
-            ui->line_2->setStyleSheet("background-color: rgb(200, 200, 200);");
-        }; break;
-        case 2:
-        {
-            file.setFileName(":/style_wave.css");
-            ui->frame_main->setStyleSheet("background-color: rgb(39, 44, 54);");
-            ui->labelThumb->setStyleSheet("color: rgb(210, 210, 210); background-color: rgba(37, 42, 52, 150);");
-            ui->frame_source->setStyleSheet("background-color: rgba(37, 42, 52, 150);");
-            ui->frame_output->setStyleSheet("background-color: rgba(37, 42, 52, 150);");
-            ui->textBrowser_1->setStyleSheet("color: rgb(210, 210, 210); background-color: transparent; border: 1px solid rgba(27, 29, 35, 0);");
-            ui->textBrowser_2->setStyleSheet("color: rgb(210, 210, 210); background-color: transparent; border: 1px solid rgba(27, 29, 35, 0);");
-            ui->line_1->setStyleSheet("background-color: rgb(200, 200, 200);");
-            ui->line_2->setStyleSheet("background-color: rgb(200, 200, 200);");
-        }; break;
-        case 3:
-        {
-            file.setFileName(":/style_white.css");
-            ui->frame_main->setStyleSheet("background-color: rgb(160, 160, 160);");
-            ui->labelThumb->setStyleSheet("color: rgb(3, 3, 5); background-color: rgba(200, 200, 205, 150);");
-            ui->frame_source->setStyleSheet("background-color: rgba(200, 200, 205, 150);");
-            ui->frame_output->setStyleSheet("background-color: rgba(200, 200, 205, 150);");
-            ui->textBrowser_1->setStyleSheet("color: rgb(3, 3, 5); background-color: transparent; border: 1px solid rgba(27, 29, 35, 0);");
-            ui->textBrowser_2->setStyleSheet("color: rgb(3, 3, 5); background-color: transparent; border: 1px solid rgba(27, 29, 35, 0);");
-            ui->line_1->setStyleSheet("background-color: rgb(20, 20, 20);");
-            ui->line_2->setStyleSheet("background-color: rgb(20, 20, 20);");
-        }; break;
-    }
-    file.open(QFile::ReadOnly);
-    QString list = file.readAll();
-    ui->frame_1->setStyleSheet(list);
-    ui->tableWidget->horizontalHeader()->setVisible(true);
-    int i = 11;
-    if (!_showHDR_mode)
-    {
-        while (i <= 19) {
-            ui->tableWidget->hideColumn(i);
-            i++;
-        }
-    } else {
-        while (i <= 19) {
-            ui->tableWidget->showColumn(i);
-            i++;
-        }
-    }
 }
 
 void MainWindow::repeat_handler()   //**************************** Repeat handler *******************//
@@ -2008,8 +2022,8 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
                 {
                     int deltaX = mouse_event->globalPos().x() - mouseClickCoordinate.x();
                     int deltaY = mouse_event->globalPos().y() - mouseClickCoordinate.y();
-                    int deltaWidth = (int)mouse_event->localPos().x() - mouseClickCoordinate.x();
-                    int deltaHeight = (int)mouse_event->localPos().y() - mouseClickCoordinate.y();
+                    int deltaWidth = static_cast<int>(mouse_event->localPos().x()) - mouseClickCoordinate.x();
+                    int deltaHeight = static_cast<int>(mouse_event->localPos().y()) - mouseClickCoordinate.y();
                     if (clickPressed_Left_ResizeFlag == true)
                     {
                         this->setGeometry(deltaX, this->pos().y(), this->width() - deltaWidth, curHeight);
@@ -2082,5 +2096,91 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
             }
         }
     }
+    else if (watched == raiseThumb) // ************** Click thumb realisation ************** //
+    {
+        if (event->type() == QEvent::MouseButtonPress)
+        {
+            QMouseEvent* mouse_event = dynamic_cast<QMouseEvent*>(event);
+            if (mouse_event->button() == Qt::LeftButton)
+            {
+                on_actionAdd_clicked();
+                return QMainWindow::eventFilter(watched, event);
+            }
+        }
+    }
     return QMainWindow::eventFilter(watched, event);
+}
+
+void MainWindow::dragEnterEvent(QDragEnterEvent* event) //************* Drag & Drop *************//
+{
+    event->acceptProposedAction();
+}
+
+void MainWindow::dragMoveEvent(QDragMoveEvent* event)
+{
+    event->acceptProposedAction();
+}
+
+void MainWindow::dragLeaveEvent(QDragLeaveEvent* event)
+{
+    event->accept();
+}
+
+void MainWindow::dropEvent(QDropEvent* event)
+{
+    const QMimeData *mimeData = event->mimeData();
+    if (mimeData->hasUrls())
+    {
+        QStringList formats;
+        QStringList pathList;
+        QList<QUrl> urlList = mimeData->urls();
+        for (int i = 0; i < urlList.size() && i < 32; ++i)
+        {
+            pathList.append(urlList.at(i).toLocalFile());
+            formats.append(QMimeDatabase().mimeTypeForFile(pathList.at(i)).name());
+        }
+        if (!formats.filter("audio/").empty() || !formats.filter("video/").empty())
+        {
+            openFiles(pathList);
+            event->acceptProposedAction();
+            return;
+        }
+    }
+    event->ignore();
+}
+
+void MainWindow::setTheme(int &ind_theme)   //********************** Set theme **********************//
+{
+    QFile file;
+    switch (ind_theme)
+    {
+        case 0: {
+            file.setFileName(":/style_0.css");
+        }; break;
+        case 1: {
+            file.setFileName(":/style_1.css");
+        }; break;
+        case 2: {
+            file.setFileName(":/style_2.css");
+        }; break;
+        case 3: {
+            file.setFileName(":/style_3.css");
+        }; break;
+    }
+    file.open(QFile::ReadOnly);
+    QString list = file.readAll();
+    qApp->setStyleSheet(list);
+    int i = 11;
+    if (!_showHDR_mode)
+    {
+        while (i <= 19) {
+            ui->tableWidget->hideColumn(i);
+            i++;
+        }
+    } else {
+        while (i <= 19) {
+            ui->tableWidget->showColumn(i);
+            i++;
+        }
+    }
 }

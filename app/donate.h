@@ -22,7 +22,7 @@ public:
 
     ~Donate();
 
-    void setParameters(int &ind_theme);
+    void setParameters();
 
 private slots:
 
@@ -43,9 +43,6 @@ private:
     bool clickPressedFlag = false;
 
     QPoint mouseClickCoordinate;
-
-    void setTheme(int &ind_theme);
-
 };
 
 #endif // DONATE_H

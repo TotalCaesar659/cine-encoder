@@ -401,7 +401,6 @@
         <file>icons/24x24/cil-x.png</file>
         <file>icons/24x24/cil-zoom-in.png</file>
         <file>icons/24x24/cil-zoom-out.png</file>
-        <file>icons/24x24/cine-encoder.png</file>
     </qresource>
     <qresource prefix="/32x32">
         <file>icons/Apagar/cil-3d.png</file>
@@ -517,10 +516,13 @@
         <file>icons/Apagar/cine-encoder.png</file>
     </qresource>
     <qresource prefix="/">
-        <file>style_default.css</file>
-        <file>style_deep.css</file>
-        <file>style_wave.css</file>
-        <file>style_white.css</file>
+        <file>style_0.css</file>
+        <file>style_1.css</file>
+        <file>style_2.css</file>
+        <file>style_3.css</file>
         <file>icons/images/splash.png</file>
+        <file>icons/images/logo.png</file>
+        <file>about.html</file>
+        <file>donate.html</file>
     </qresource>
 </RCC>

@@ -27,7 +27,7 @@ public:
 
     ~Taskcomplete();
 
-    void setMessage(const QString &_message, const bool &_timer_mode, int &ind_theme);
+    void setMessage(const QString &_message, const bool &_timer_mode);
 
 private slots:
 
@@ -54,8 +54,6 @@ private:
     QPoint mouseClickCoordinate;
 
     void show_message(QString _message);
-
-    void setTheme(int &ind_theme);
 };
 
 #endif // TASKCOMPLETE_H

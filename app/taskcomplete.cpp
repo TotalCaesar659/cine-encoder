@@ -27,12 +27,11 @@ void Taskcomplete::on_closeWindow_clicked() // Close window
     this->close();
 }
 
-void Taskcomplete::setMessage(const QString &_message, const bool &_timer_mode, int &ind_theme)   // Set parameters
+void Taskcomplete::setMessage(const QString &_message, const bool &_timer_mode)   // Set parameters
 {
     ui_taskcomplete->frame_hint->installEventFilter(this);
     mouseClickCoordinate.setX(0);
     mouseClickCoordinate.setY(0);
-    setTheme(ind_theme);
     if (_timer_mode == true)
     {
         show_message(_message);
@@ -43,8 +42,11 @@ void Taskcomplete::setMessage(const QString &_message, const bool &_timer_mode, 
     }
     else
     {
-        QSound *sound = new QSound("/usr/share/sounds/cine-encoder.wav", this);
-        sound->play();
+#ifdef Q_OS_WIN
+        QSound::play("./cine-encoder.wav");
+#else
+        QSound::play("/usr/share/sounds/cine-encoder.wav");
+#endif
         show_message(_message);
     }
 }
@@ -76,33 +78,6 @@ void Taskcomplete::show_message(QString _message)   // Show message
     ui_taskcomplete->textBrowser->clear();
     ui_taskcomplete->textBrowser->setAlignment(Qt::AlignCenter);
     ui_taskcomplete->textBrowser->append(_message);
-}
-
-void Taskcomplete::setTheme(int &ind_theme)
-{
-    switch (ind_theme)
-    {
-        case 0:
-        {
-            ui_taskcomplete->frame_main->setStyleSheet("background-color: rgb(5, 20, 28);");
-            ui_taskcomplete->textBrowser->setStyleSheet("color: rgb(255, 255, 255);");
-        }; break;
-        case 1:
-        {
-            ui_taskcomplete->frame_main->setStyleSheet("background-color: rgb(3, 3, 5);");
-            ui_taskcomplete->textBrowser->setStyleSheet("color: rgb(255, 255, 255);");
-        }; break;
-        case 2:
-        {
-            ui_taskcomplete->frame_main->setStyleSheet("background-color: rgb(39, 44, 54);");
-            ui_taskcomplete->textBrowser->setStyleSheet("color: rgb(255, 255, 255);");
-        }; break;
-        case 3:
-        {
-            ui_taskcomplete->frame_main->setStyleSheet("background-color: rgb(220, 220, 220);");
-            ui_taskcomplete->textBrowser->setStyleSheet("color: rgb(3, 3, 5);");
-        }; break;
-    }
 }
 
 bool Taskcomplete::eventFilter(QObject *watched, QEvent *event)
@@ -141,3 +116,4 @@ bool Taskcomplete::eventFilter(QObject *watched, QEvent *event)
     }
     return QDialog::eventFilter(watched, event);
 }
+

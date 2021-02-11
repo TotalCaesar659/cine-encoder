@@ -21,7 +21,7 @@ public:
 
     ~Dialog();
 
-    void setMessage(const QString &_message, bool *_aceptFlag, int &ind_theme);
+    void setMessage(const QString &_message, bool *_aceptFlag);
 
 private slots:
 
@@ -46,8 +46,6 @@ private:
     QPoint mouseClickCoordinate;
 
     void show_message(QString _message);
-
-    void setTheme(int &ind_theme);
 };
 
 #endif // DIALOG_H

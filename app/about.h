@@ -24,7 +24,7 @@ public:
 
     ~About();
 
-    void setParameters(int &ind_theme);
+    void setParameters();
 
 private slots:
 
@@ -41,10 +41,6 @@ private:
     bool clickPressedFlag = false;
 
     QPoint mouseClickCoordinate;
-
-    //void showEvent(QShowEvent *event);
-
-    void setTheme(int &ind_theme);
 };
 
 #endif // ABOUT_H

@@ -124,8 +124,6 @@ private:
     QPoint mouseClickCoordinate;
 
     void call_task_complete(const QString &_message, const bool &timer_mode);
-
-    void setTheme(int &ind_theme);
 };
 
 #endif // SETTINGS_H

@@ -1,0 +1,4 @@
+cine_encoder usr/bin
+cine-encoder.desktop usr/share/applications
+cine-encoder.wav usr/share/sounds
+cine-encoder.png usr/share/icons/hicolor/64x64/apps

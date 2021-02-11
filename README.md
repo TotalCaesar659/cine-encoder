@@ -13,14 +13,11 @@ Cine Encoder is an application that allows you to convert media files while pres
   - ProRes 4444 4:4:4 (10 bit)
 
 ![View](./images/View.png)
-
-The preset menu is used to select the encoding format. You can add your own preset or change an existing one.
-
 ![View](./images/View_2.png)
 
 ### Installation
 
-Supported operating system: Linux (x86_64), Windows 8.1, 10 (x86_64)
+Supported operating system: Linux x86_64, Windows 8.1, 10 x86_64
 
 Make sure that the NVIDIA drivers are installed in accordance with the following requirements: [Using FFMPEG with NVIDIA.](https://docs.nvidia.com/video-technologies/video-codec-sdk/ffmpeg-with-nvidia-gpu/index.html)
 
@@ -43,8 +40,10 @@ Install dependencies:
 
     - ffmpeg>=4.2
     - mkvtoolnix>=49.0
-    - libmediainfo>=20.03
-    - qt5-base>=5.15
+    - libmediainfo-dev>=0.7.70-1
+    - qtbase5-dev>=5.3.2
+    - qtmultimedia5-dev>=5.7.1
+
 
 Buld package:
 

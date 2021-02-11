@@ -38,9 +38,6 @@
    <iconset resource="files.qrc">
     <normaloff>:/20x20/icons/20x20/cil-settings.png</normaloff>:/20x20/icons/20x20/cil-settings.png</iconset>
   </property>
-  <property name="styleSheet">
-   <string notr="true">background: rgb(0, 50, 250)</string>
-  </property>
   <property name="locale">
    <locale language="English" country="UnitedStates"/>
   </property>
@@ -62,9 +59,6 @@
    </property>
    <item row="0" column="0">
     <widget class="QWidget" name="widget" native="true">
-     <property name="styleSheet">
-      <string notr="true">background: rgb(0, 50, 250)</string>
-     </property>
      <layout class="QGridLayout" name="gridLayout_3">
       <property name="leftMargin">
        <number>1</number>
@@ -96,42 +90,7 @@
          </size>
         </property>
         <property name="styleSheet">
-         <string notr="true">QFrame {
-	background-color: rgb(5, 20, 28);
-}
-
-QLineEdit {
-	color: rgb(98, 103, 111);	
-	background-color: rgb(27, 29, 35);
-	border-radius: 0px;
-	border: 2px solid rgb(27, 29, 35);
-	padding-left: 8px;
-}
-QLineEdit:hover {
-	border: 2px solid rgb(64, 71, 88);
-}
-QLineEdit:focus {
-	border: 2px solid rgb(91, 101, 124);
-}
-
-QCheckBox {
-	spacing: 12px;
-	color: rgb(255, 255, 255);
-	background-color: transparent;
-}
-QCheckBox::indicator {
-	border: 2px solid #5A5A5A;
-    background: none;
-	width: 12px;
-    height: 12px;
-}
-QCheckBox::indicator:checked {
-	image: url(:/16x16/icons/16x16/cil-check-alt.png);
-	border: 2px solid #5A5A5A;
-    background: none;
-	width: 12px;
-    height: 12px;
-}</string>
+         <string notr="true"/>
         </property>
         <property name="frameShape">
          <enum>QFrame::NoFrame</enum>
@@ -168,9 +127,6 @@ QCheckBox::indicator:checked {
              <width>3840</width>
              <height>31</height>
             </size>
-           </property>
-           <property name="styleSheet">
-            <string notr="true">background-color: qlineargradient( x1:0 y1:0, x2:1 y2:0, stop:0 rgba(27, 29, 35, 150), stop:1 rgb(5, 20, 28));</string>
            </property>
            <property name="frameShape">
             <enum>QFrame::NoFrame</enum>
@@ -374,8 +330,7 @@ QPushButton:pressed {
             </size>
            </property>
            <property name="styleSheet">
-            <string notr="true">background-color: rgba(27, 29, 35, 180);
-/*border-top: 1px solid rgba(100, 100, 168, 50);*/
+            <string notr="true">background-color: transparent;
 </string>
            </property>
            <property name="frameShape">
@@ -641,9 +596,6 @@ QPushButton:pressed {
            </property>
            <property name="acceptDrops">
             <bool>false</bool>
-           </property>
-           <property name="styleSheet">
-            <string notr="true">background-color: rgba(27, 29, 35, 150)</string>
            </property>
            <property name="frameShape">
             <enum>QFrame::NoFrame</enum>
@@ -928,9 +880,7 @@ QPushButton:pressed {
             </size>
            </property>
            <property name="styleSheet">
-            <string notr="true">QFrame{
-	background-color: rgb(5, 20, 28);
-}</string>
+            <string notr="true">background-color: transparent;</string>
            </property>
            <property name="frameShape">
             <enum>QFrame::NoFrame</enum>
@@ -1338,7 +1288,7 @@ QComboBox QAbstractItemView {
               </item>
               <item>
                <property name="text">
-                <string>Black</string>
+                <string>Dark</string>
                </property>
               </item>
               <item>

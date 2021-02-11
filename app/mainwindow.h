@@ -2,23 +2,47 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QSysInfo>
 #include <QDesktopWidget>
 #include <QMouseEvent>
 #include <QCloseEvent>
 #include <QShowEvent>
+#include <QDragEnterEvent>
+#include <QDragLeaveEvent>
+#include <QDragMoveEvent>
+#include <QDropEvent>
+#include <QMimeDatabase>
+#include <QMimeData>
+#include <QUrl>
+#include <QList>
 #include <QMenu>
 #include <QProcess>
 #include <QTimer>
 #include <QFileDialog>
 #include <QPixmap>
-//#include <QDebug>
-#include <signal.h>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QtGlobal>
+#include <QDebug>
 #include <iostream>
 #include <iomanip>
 #include <sstream>
 #include <ctime>
 #include <math.h>
 
+#ifdef Q_OS_WIN
+    #include "MediaInfoDLL/MediaInfoDLL.h"
+    using namespace MediaInfoDLL;
+#else
+    #include <signal.h>
+    #include <MediaInfo/MediaInfo.h>
+    using namespace MediaInfoLib;
+#endif
+
+
+
+extern QString _cur_param[23];
+extern QVector <QVector <QString> > _preset_table;
 
 QT_BEGIN_NAMESPACE
 namespace Ui
@@ -55,6 +79,14 @@ public:
 private slots:
 
     void setParameters();
+
+    void dragEnterEvent(QDragEnterEvent* event);
+
+    void dragMoveEvent(QDragMoveEvent* event);
+
+    void dragLeaveEvent(QDragLeaveEvent* event);
+
+    void dropEvent(QDropEvent* event);
 
     void showEvent(QShowEvent *event);
 
@@ -111,6 +143,10 @@ private slots:
 private:
 
     Ui::MainWindow *ui;
+
+    QHBoxLayout *raiseLayout = new QHBoxLayout();
+
+    QLabel *raiseThumb = new QLabel(this);
 
     // ***************** Top menu actions ************************//
 
@@ -199,6 +235,8 @@ private:
     int _theme;
 
     int _row, _fr_count;
+
+    void openFiles(const QStringList &file_name_open);
 
     void get_current_data();
 

@@ -2,6 +2,7 @@
 #include "ui_donate.h"
 
 
+
 Donate::Donate(QWidget *parent) :
     QDialog(parent),
     ui_donate(new Ui::Donate)
@@ -26,12 +27,17 @@ void Donate::on_closeWindow_clicked()
     this->close();
 }
 
-void Donate::setParameters(int &ind_theme)
+void Donate::setParameters()
 {
     ui_donate->frame_hint->installEventFilter(this);
     mouseClickCoordinate.setX(0);
     mouseClickCoordinate.setY(0);
-    setTheme(ind_theme);
+    QFile file;
+    file.setFileName(":/donate.html");
+    file.open(QFile::ReadOnly);
+    QString text = file.readAll();
+    ui_donate->textBrowser->setHtml(text);
+    ui_donate->textBrowser->setOpenExternalLinks(true);
 }
 
 void Donate::on_toolButton_7_clicked()   // Open browser PayPal
@@ -42,29 +48,6 @@ void Donate::on_toolButton_7_clicked()   // Open browser PayPal
 void Donate::on_toolButton_8_clicked()   // Open browser Bitcoin
 {
     QDesktopServices::openUrl(QUrl("https://blockchain.com/btc/payment_request?address=14ukiWCK2f8vFNPP3qKbo2vfaSGRMN63qL&amount=0.00005448&message=Cine Encoder donation", QUrl::TolerantMode));
-}
-
-void Donate::setTheme(int &ind_theme)
-{
-    switch (ind_theme)
-    {
-        case 0:
-        {
-            ui_donate->frame_main->setStyleSheet("QFrame {background-color: rgb(5, 20, 28);} QLabel {color: rgb(210, 210, 210);}");
-        }; break;
-        case 1:
-        {
-            ui_donate->frame_main->setStyleSheet("QFrame {background-color: rgb(3, 3, 5);} QLabel {color: rgb(210, 210, 210);}");
-        }; break;
-        case 2:
-        {
-            ui_donate->frame_main->setStyleSheet("QFrame {background-color: rgb(39, 44, 54);} QLabel {color: rgb(210, 210, 210);}");
-        }; break;
-        case 3:
-        {
-            ui_donate->frame_main->setStyleSheet("QFrame {background-color: rgb(220, 220, 220);} QLabel {color: rgb(3, 3, 5);}");
-        }; break;
-    }
 }
 
 bool Donate::eventFilter(QObject *watched, QEvent *event)

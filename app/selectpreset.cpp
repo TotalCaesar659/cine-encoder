@@ -5,8 +5,6 @@
 #include "dialog.h"
 
 
-extern QVector <QVector <QString> > _preset_table;
-extern QString _cur_param[23];
 
 SelectPreset::SelectPreset(QWidget *parent) :
     QDialog(parent),
@@ -55,18 +53,16 @@ void SelectPreset::on_hideWindow_2_clicked()
     this->showMinimized();
 }
 
-void SelectPreset::setParameters(int *ptr_pos_top, int *ptr_pos_cld, int *ptr_theme)    //***** Set paremeters ***************//
+void SelectPreset::setParameters(int *ptr_pos_top, int *ptr_pos_cld)    //***** Set paremeters ***************//
 {
-    this->resize(850, 600);
+    this->resize(950, 600);
     ui_selectpreset->frame_hint->installEventFilter(this);
     ui_selectpreset->widget->installEventFilter(this);
     mouseClickCoordinate.setX(0);
     mouseClickCoordinate.setY(0);
     _ptr_pos_top = ptr_pos_top;
     _ptr_pos_cld = ptr_pos_cld;
-    _ptr_theme = ptr_theme;
 
-    setTheme(*ptr_theme);
     ui_selectpreset->treeWidget->clear();
     int n = _preset_table[0].size();
     int m = _preset_table.size();
@@ -247,7 +243,7 @@ void SelectPreset::on_actionEdit_preset_clicked()  //************************** 
             _cur_param[k] = item->text(k);
         };
         Preset preset(this);
-        preset.setParameters(*_ptr_theme);
+        preset.setParameters();
         preset.setModal(true);
         preset.exec();  //******************************** Go to Preset and wait for return ***************************//
         for (int k = 0; k < 23; k++) {
@@ -337,46 +333,11 @@ void SelectPreset::on_pushButton_6_clicked()  //****************************** A
     this->close();
 }
 
-void SelectPreset::setTheme(int &ind_theme)
-{
-    QFile file;
-    switch (ind_theme)
-    {
-        case 0:
-        {
-            file.setFileName(":/style_default.css");
-            ui_selectpreset->frame_main->setStyleSheet("background-color: rgb(5, 20, 28); border: none;");
-            ui_selectpreset->frame_bottom->setStyleSheet("background-color: rgba(27, 29, 35, 20);");
-        }; break;
-        case 1:
-        {
-            file.setFileName(":/style_deep.css");
-            ui_selectpreset->frame_main->setStyleSheet("background-color: rgb(3, 3, 5); border: none;");
-            ui_selectpreset->frame_bottom->setStyleSheet("background-color: rgba(27, 29, 35, 20); border-top: 1px solid rgba(100, 100, 168, 50);");
-        }; break;
-        case 2:
-        {
-            file.setFileName(":/style_wave.css");
-            ui_selectpreset->frame_main->setStyleSheet("background-color: rgb(39, 44, 54); border: none;");
-            ui_selectpreset->frame_bottom->setStyleSheet("background-color: rgba(27, 29, 35, 150); border-top: 1px solid rgba(100, 100, 168, 50);");
-        }; break;
-        case 3:
-        {
-            file.setFileName(":/style_white.css");
-            ui_selectpreset->frame_main->setStyleSheet("background-color: rgb(220, 220, 220); border: none;");
-            ui_selectpreset->frame_bottom->setStyleSheet("background-color: rgba(27, 29, 35, 120); border-top: 1px solid rgba(100, 100, 168, 50);");
-        }; break;
-    }
-    file.open(QFile::ReadOnly);
-    QString list = file.readAll();
-    ui_selectpreset->frame_widget->setStyleSheet(list);
-}
-
 bool SelectPreset::call_dialog(const QString &_message)  // Call dialog ******//
 {
     bool acceptFlag = false;
     Dialog dialog(this);
-    dialog.setMessage(_message, &acceptFlag, *_ptr_theme);
+    dialog.setMessage(_message, &acceptFlag);
     dialog.setModal(true);
     dialog.exec();
     return acceptFlag;
@@ -385,7 +346,7 @@ bool SelectPreset::call_dialog(const QString &_message)  // Call dialog ******//
 void SelectPreset::call_task_complete(const QString &_message, const bool &_timer_mode)   // Call task complete
 {
     Taskcomplete taskcomplete(this);
-    taskcomplete.setMessage(_message, _timer_mode, *_ptr_theme);
+    taskcomplete.setMessage(_message, _timer_mode);
     taskcomplete.setModal(true);
     taskcomplete.exec();
 }
@@ -475,8 +436,8 @@ bool SelectPreset::eventFilter(QObject *watched, QEvent *event)
                 {
                     int deltaX = mouse_event->globalPos().x() - mouseClickCoordinate.x();
                     int deltaY = mouse_event->globalPos().y() - mouseClickCoordinate.y();
-                    int deltaWidth = (int)mouse_event->localPos().x() - mouseClickCoordinate.x();
-                    int deltaHeight = (int)mouse_event->localPos().y() - mouseClickCoordinate.y();
+                    int deltaWidth = static_cast<int>(mouse_event->localPos().x()) - mouseClickCoordinate.x();
+                    int deltaHeight = static_cast<int>(mouse_event->localPos().y()) - mouseClickCoordinate.y();
                     if (clickPressed_Left_ResizeFlag == true)
                     {
                         this->setGeometry(deltaX, _posY, this->width() - deltaWidth, _height);

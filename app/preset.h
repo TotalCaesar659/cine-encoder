@@ -6,6 +6,7 @@
 #include <iostream>
 #include <QMouseEvent>
 
+extern QString _cur_param[23];
 
 namespace Ui
 {
@@ -23,7 +24,7 @@ public:
 
     ~Preset();
 
-    void setParameters(int &ind_theme);
+    void setParameters();
 
 private slots:
 
@@ -104,8 +105,6 @@ private:
     int _height;
 
     QPoint mouseClickCoordinate;
-
-    void setTheme(int &ind_theme);
 };
 
 #endif // PRESET_H

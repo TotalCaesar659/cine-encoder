@@ -41,9 +41,6 @@
   <property name="toolTip">
    <string/>
   </property>
-  <property name="styleSheet">
-   <string notr="true">background: rgb(0, 50, 250)</string>
-  </property>
   <property name="locale">
    <locale language="English" country="UnitedStates"/>
   </property>
@@ -65,9 +62,6 @@
    </property>
    <item row="0" column="0">
     <widget class="QWidget" name="widget" native="true">
-     <property name="styleSheet">
-      <string notr="true">background: rgb(0, 50, 250)</string>
-     </property>
      <layout class="QGridLayout" name="gridLayout_5">
       <property name="leftMargin">
        <number>1</number>
@@ -103,137 +97,6 @@
         </property>
         <property name="tabletTracking">
          <bool>true</bool>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">QFrame{
-	background-color: rgb(5, 20, 28);
-}
-
-
-
-QScrollBar:horizontal {
-	border: none;
-	background: rgb(52, 59, 72);
-	height: 14px;
-	margin: 0px 21px 0 21px;
-	border-radius: 0px;
-}
-QScrollBar:vertical {
-	border: none;
-	background: rgb(52, 59, 72);
-	width: 14px;
-	margin: 21px 0 21px 0;
-	border-radius: 0px;
- }
-QScrollBar::handle:horizontal {
-	background: rgb(27, 29, 35);
-	min-width: 25px;
-	border-radius: 7px
-}
-QScrollBar::handle:vertical {	
-	background: rgb(27, 29, 35);
-	min-height: 25px;
-	border-radius: 7px
- }
-QScrollBar::add-line:horizontal {
-	border: none;
-	background: rgb(55, 63, 77);
-	width: 20px;
-	border-top-right-radius: 7px;
-	border-bottom-right-radius: 7px;
-	subcontrol-position: right;
-	subcontrol-origin: margin;
-}
-QScrollBar::add-line:vertical {
-	border: none;
-	background: rgb(55, 63, 77);
-	height: 20px;
-	border-bottom-left-radius: 7px;
-	border-bottom-right-radius: 7px;
-	subcontrol-position: bottom;
-	subcontrol-origin: margin;
- }
-QScrollBar::sub-line:horizontal {
-	border: none;
-	background: rgb(55, 63, 77);
-	width: 20px;
-	border-top-left-radius: 7px;
-	border-bottom-left-radius: 7px;
-	subcontrol-position: left;
-	subcontrol-origin: margin;
-}
-QScrollBar::sub-line:vertical {
-	border: none;
-	background: rgb(55, 63, 77);
-	height: 20px;
-	border-top-left-radius: 7px;
-	border-top-right-radius: 7px;
-	subcontrol-position: top;
-	subcontrol-origin: margin;
- }
-QScrollBar::up-arrow:horizontal, QScrollBar::down-arrow:horizontal
-{
-	background: none;
-}
-QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical {
-	background: none;
- }
-QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal
-{
-	background: none;
-}
-QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
-	background: none;
- }
-
-
-
-QSlider::groove:horizontal {
-    border-radius: 9px;
-    height: 18px;
-	margin: 0px;
-	background-color: rgb(52, 59, 72);
-}
-QSlider::groove:horizontal:hover {
-	background-color: rgb(55, 62, 76);
-}
-QSlider::handle:horizontal {
-    background-color: rgb(85, 170, 255);
-    border: none;
-    height: 18px;
-    width: 18px;
-    margin: 0px;
-	border-radius: 9px;
-}
-QSlider::handle:horizontal:hover {
-    background-color: rgb(105, 180, 255);
-}
-QSlider::handle:horizontal:pressed {
-    background-color: rgb(65, 130, 195);
-}
-QSlider::groove:vertical {
-    border-radius: 9px;
-    width: 18px;
-    margin: 0px;
-	background-color: rgb(52, 59, 72);
-}
-QSlider::groove:vertical:hover {
-	background-color: rgb(55, 62, 76);
-}
-QSlider::handle:vertical {
-    background-color: rgb(85, 170, 255);
-	border: none;
-    height: 18px;
-    width: 18px;
-    margin: 0px;
-	border-radius: 9px;
-}
-QSlider::handle:vertical:hover {
-    background-color: rgb(105, 180, 255);
-}
-QSlider::handle:vertical:pressed {
-    background-color: rgb(65, 130, 195);
-}</string>
         </property>
         <property name="frameShape">
          <enum>QFrame::NoFrame</enum>
@@ -348,9 +211,6 @@ background-color: transparent;</string>
              <height>2160</height>
             </size>
            </property>
-           <property name="styleSheet">
-            <string notr="true">background-color: rgb(5, 20, 28);</string>
-           </property>
            <property name="frameShape">
             <enum>QFrame::NoFrame</enum>
            </property>
@@ -380,9 +240,6 @@ background-color: transparent;</string>
               </property>
               <property name="autoFillBackground">
                <bool>false</bool>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">background-color: rgb(5, 20, 28);</string>
               </property>
               <property name="frameShape">
                <enum>QFrame::NoFrame</enum>
@@ -539,11 +396,11 @@ QComboBox QAbstractItemView {
                        <height>16</height>
                       </size>
                      </property>
-                     <property name="placeholderText">
-                      <string notr="true"/>
-                     </property>
                      <property name="frame">
                       <bool>true</bool>
+                     </property>
+                     <property name="placeholderText" stdset="0">
+                      <string notr="true"/>
                      </property>
                      <item>
                       <property name="text">
@@ -1042,11 +899,11 @@ QComboBox QAbstractItemView {
                        <height>16</height>
                       </size>
                      </property>
-                     <property name="placeholderText">
-                      <string notr="true"/>
-                     </property>
                      <property name="frame">
                       <bool>true</bool>
+                     </property>
+                     <property name="placeholderText" stdset="0">
+                      <string notr="true"/>
                      </property>
                      <item>
                       <property name="text">
@@ -1436,11 +1293,11 @@ QComboBox QAbstractItemView {
                        <height>16</height>
                       </size>
                      </property>
-                     <property name="placeholderText">
-                      <string notr="true"/>
-                     </property>
                      <property name="frame">
                       <bool>true</bool>
+                     </property>
+                     <property name="placeholderText" stdset="0">
+                      <string notr="true"/>
                      </property>
                      <item>
                       <property name="text">
@@ -1521,11 +1378,11 @@ QComboBox QAbstractItemView {
                        <height>16</height>
                       </size>
                      </property>
-                     <property name="placeholderText">
-                      <string notr="true"/>
-                     </property>
                      <property name="frame">
                       <bool>true</bool>
+                     </property>
+                     <property name="placeholderText" stdset="0">
+                      <string notr="true"/>
                      </property>
                      <item>
                       <property name="text">
@@ -1606,11 +1463,11 @@ QComboBox QAbstractItemView {
                        <height>16</height>
                       </size>
                      </property>
-                     <property name="placeholderText">
-                      <string notr="true"/>
-                     </property>
                      <property name="frame">
                       <bool>true</bool>
+                     </property>
+                     <property name="placeholderText" stdset="0">
+                      <string notr="true"/>
                      </property>
                      <item>
                       <property name="text">
@@ -1672,9 +1529,6 @@ QComboBox QAbstractItemView {
              <height>2160</height>
             </size>
            </property>
-           <property name="styleSheet">
-            <string notr="true">background-color: transparent;</string>
-           </property>
            <property name="frameShape">
             <enum>QFrame::NoFrame</enum>
            </property>
@@ -1704,9 +1558,6 @@ QComboBox QAbstractItemView {
               </property>
               <property name="autoFillBackground">
                <bool>false</bool>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">background-color: rgb(5, 20, 28);</string>
               </property>
               <property name="frameShape">
                <enum>QFrame::NoFrame</enum>
@@ -1905,11 +1756,11 @@ QComboBox QAbstractItemView {
                        <height>16</height>
                       </size>
                      </property>
-                     <property name="placeholderText">
-                      <string notr="true"/>
-                     </property>
                      <property name="frame">
                       <bool>true</bool>
+                     </property>
+                     <property name="placeholderText" stdset="0">
+                      <string notr="true"/>
                      </property>
                      <item>
                       <property name="text">
@@ -2005,11 +1856,11 @@ QComboBox QAbstractItemView {
                        <height>16</height>
                       </size>
                      </property>
-                     <property name="placeholderText">
-                      <string notr="true"/>
-                     </property>
                      <property name="frame">
                       <bool>true</bool>
+                     </property>
+                     <property name="placeholderText" stdset="0">
+                      <string notr="true"/>
                      </property>
                      <item>
                       <property name="text">
@@ -2093,11 +1944,11 @@ QComboBox QAbstractItemView {
                        <height>16</height>
                       </size>
                      </property>
-                     <property name="placeholderText">
-                      <string notr="true"/>
-                     </property>
                      <property name="frame">
                       <bool>true</bool>
+                     </property>
+                     <property name="placeholderText" stdset="0">
+                      <string notr="true"/>
                      </property>
                      <item>
                       <property name="text">
@@ -2217,9 +2068,6 @@ QCheckBox::indicator:checked {
            </property>
            <property name="acceptDrops">
             <bool>false</bool>
-           </property>
-           <property name="styleSheet">
-            <string notr="true">background-color: rgba(27, 29, 35, 150)</string>
            </property>
            <property name="frameShape">
             <enum>QFrame::NoFrame</enum>
@@ -2640,9 +2488,6 @@ QLineEdit:disabled{
              <height>2160</height>
             </size>
            </property>
-           <property name="styleSheet">
-            <string notr="true">background-color: rgb(5, 20, 28);</string>
-           </property>
            <property name="frameShape">
             <enum>QFrame::NoFrame</enum>
            </property>
@@ -2672,9 +2517,6 @@ QLineEdit:disabled{
               </property>
               <property name="autoFillBackground">
                <bool>false</bool>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">background-color: rgb(5, 20, 28);</string>
               </property>
               <property name="frameShape">
                <enum>QFrame::NoFrame</enum>
@@ -2885,11 +2727,11 @@ QComboBox QAbstractItemView {
                        <height>16</height>
                       </size>
                      </property>
-                     <property name="placeholderText">
-                      <string notr="true"/>
-                     </property>
                      <property name="frame">
                       <bool>true</bool>
+                     </property>
+                     <property name="placeholderText" stdset="0">
+                      <string notr="true"/>
                      </property>
                      <item>
                       <property name="text">
@@ -3025,11 +2867,11 @@ QComboBox QAbstractItemView {
                        <height>16</height>
                       </size>
                      </property>
-                     <property name="placeholderText">
-                      <string notr="true"/>
-                     </property>
                      <property name="frame">
                       <bool>true</bool>
+                     </property>
+                     <property name="placeholderText" stdset="0">
+                      <string notr="true"/>
                      </property>
                      <item>
                       <property name="text">
@@ -3130,11 +2972,11 @@ QComboBox QAbstractItemView {
                        <height>16</height>
                       </size>
                      </property>
-                     <property name="placeholderText">
-                      <string notr="true"/>
-                     </property>
                      <property name="frame">
                       <bool>true</bool>
+                     </property>
+                     <property name="placeholderText" stdset="0">
+                      <string notr="true"/>
                      </property>
                      <item>
                       <property name="text">
@@ -3355,11 +3197,11 @@ QComboBox QAbstractItemView {
                        <height>16</height>
                       </size>
                      </property>
-                     <property name="placeholderText">
-                      <string notr="true"/>
-                     </property>
                      <property name="frame">
                       <bool>true</bool>
+                     </property>
+                     <property name="placeholderText" stdset="0">
+                      <string notr="true"/>
                      </property>
                      <item>
                       <property name="text">
@@ -3445,11 +3287,11 @@ QComboBox QAbstractItemView {
                        <height>16</height>
                       </size>
                      </property>
-                     <property name="placeholderText">
-                      <string notr="true"/>
-                     </property>
                      <property name="frame">
                       <bool>true</bool>
+                     </property>
+                     <property name="placeholderText" stdset="0">
+                      <string notr="true"/>
                      </property>
                      <item>
                       <property name="text">
@@ -3573,11 +3415,11 @@ QComboBox QAbstractItemView {
                        <height>16</height>
                       </size>
                      </property>
-                     <property name="placeholderText">
-                      <string notr="true"/>
-                     </property>
                      <property name="frame">
                       <bool>true</bool>
+                     </property>
+                     <property name="placeholderText" stdset="0">
+                      <string notr="true"/>
                      </property>
                      <item>
                       <property name="text">
@@ -3814,11 +3656,11 @@ QComboBox QAbstractItemView {
                        <height>16</height>
                       </size>
                      </property>
-                     <property name="placeholderText">
-                      <string notr="true"/>
-                     </property>
                      <property name="frame">
                       <bool>true</bool>
+                     </property>
+                     <property name="placeholderText" stdset="0">
+                      <string notr="true"/>
                      </property>
                      <item>
                       <property name="text">
@@ -3942,11 +3784,11 @@ QComboBox QAbstractItemView {
                        <height>16</height>
                       </size>
                      </property>
-                     <property name="placeholderText">
-                      <string notr="true"/>
-                     </property>
                      <property name="frame">
                       <bool>true</bool>
+                     </property>
+                     <property name="placeholderText" stdset="0">
+                      <string notr="true"/>
                      </property>
                      <item>
                       <property name="text">
@@ -4070,11 +3912,11 @@ QComboBox QAbstractItemView {
                        <height>16</height>
                       </size>
                      </property>
-                     <property name="placeholderText">
-                      <string notr="true"/>
-                     </property>
                      <property name="frame">
                       <bool>true</bool>
+                     </property>
+                     <property name="placeholderText" stdset="0">
+                      <string notr="true"/>
                      </property>
                      <item>
                       <property name="text">
@@ -4400,11 +4242,11 @@ QComboBox QAbstractItemView {
                        <height>16</height>
                       </size>
                      </property>
-                     <property name="placeholderText">
-                      <string notr="true"/>
-                     </property>
                      <property name="frame">
                       <bool>true</bool>
+                     </property>
+                     <property name="placeholderText" stdset="0">
+                      <string notr="true"/>
                      </property>
                      <item>
                       <property name="text">
@@ -4494,11 +4336,11 @@ QComboBox QAbstractItemView {
                        <height>16</height>
                       </size>
                      </property>
-                     <property name="placeholderText">
-                      <string notr="true"/>
-                     </property>
                      <property name="frame">
                       <bool>true</bool>
+                     </property>
+                     <property name="placeholderText" stdset="0">
+                      <string notr="true"/>
                      </property>
                      <item>
                       <property name="text">
@@ -4678,11 +4520,11 @@ QComboBox QAbstractItemView {
                        <height>16</height>
                       </size>
                      </property>
-                     <property name="placeholderText">
-                      <string notr="true"/>
-                     </property>
                      <property name="frame">
                       <bool>true</bool>
+                     </property>
+                     <property name="placeholderText" stdset="0">
+                      <string notr="true"/>
                      </property>
                      <item>
                       <property name="text">
@@ -4766,11 +4608,11 @@ QComboBox QAbstractItemView {
                        <height>16</height>
                       </size>
                      </property>
-                     <property name="placeholderText">
-                      <string notr="true"/>
-                     </property>
                      <property name="frame">
                       <bool>true</bool>
+                     </property>
+                     <property name="placeholderText" stdset="0">
+                      <string notr="true"/>
                      </property>
                      <item>
                       <property name="text">
@@ -4842,7 +4684,7 @@ QComboBox QAbstractItemView {
             </size>
            </property>
            <property name="styleSheet">
-            <string notr="true">background-color: rgba(27, 29, 35, 200)</string>
+            <string notr="true">background-color: transparent;</string>
            </property>
            <property name="frameShape">
             <enum>QFrame::NoFrame</enum>

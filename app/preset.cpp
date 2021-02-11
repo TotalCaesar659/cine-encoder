@@ -1,7 +1,7 @@
 #include "preset.h"
 #include "ui_preset.h"
 
-extern QString _cur_param[23];
+
 
 Preset::Preset(QWidget *parent) :
     QDialog(parent),
@@ -50,13 +50,12 @@ void Preset::on_hideWindow_2_clicked()
     this->showMinimized();
 }
 
-void Preset::setParameters(int &ind_theme)  //********************************************************* Set parameters *******************//
+void Preset::setParameters()  //********************************************************* Set parameters *******************//
 {
     ui_preset->frame_hint->installEventFilter(this);
     ui_preset->widget->installEventFilter(this);
     mouseClickCoordinate.setX(0);
     mouseClickCoordinate.setY(0);
-    setTheme(ind_theme);
     _repeat = 0;
     QTimer *timer = new QTimer(this);
     timer->setInterval(450);
@@ -722,85 +721,6 @@ void Preset::repeat_handler()  //***********************************************
     };
 };
 
-void Preset::setTheme(int &ind_theme)  //***************************************************** Set theme *******************//
-{
-    switch (ind_theme)
-    {
-        case 0:
-        {
-            ui_preset->frame_main->setStyleSheet("background-color: rgb(5, 20, 28);");
-            ui_preset->frame_7->setStyleSheet("background-color: rgb(5, 20, 28);");
-            ui_preset->frame_8->setStyleSheet("background-color: rgb(5, 20, 28);");
-            ui_preset->frame_9->setStyleSheet("background-color: rgb(5, 20, 28);");
-            ui_preset->scrollArea_1->setStyleSheet("background-color: rgb(5, 20, 28);");
-            ui_preset->scrollArea_2->setStyleSheet("background-color: rgb(5, 20, 28);");
-            ui_preset->scrollArea_3->setStyleSheet("background-color: rgb(5, 20, 28);");
-            ui_preset->scrollAreaWidgetContents_1->setStyleSheet("background-color: rgb(5, 20, 28);");
-            ui_preset->scrollAreaWidgetContents_2->setStyleSheet("background-color: rgb(5, 20, 28);");
-            ui_preset->scrollAreaWidgetContents_3->setStyleSheet("background-color: rgb(5, 20, 28);");
-            ui_preset->label_4->setStyleSheet("color: rgb(255, 255, 255);");
-            ui_preset->frame_6->setStyleSheet("background-color: rgba(27, 29, 35, 20);");
-            ui_preset->frame_1->setStyleSheet("background-color: rgba(5, 25, 30, 220); border: none;");
-            ui_preset->frame_2->setStyleSheet("background-color: rgba(5, 25, 30, 220); border: none;");
-            ui_preset->frame_3->setStyleSheet("background-color: rgba(5, 25, 30, 220); border: none;");
-        }; break;
-        case 1:
-        {
-            ui_preset->frame_main->setStyleSheet("background-color: rgb(3, 3, 5);");
-            ui_preset->frame_7->setStyleSheet("background-color: rgb(3, 3, 5);");
-            ui_preset->frame_8->setStyleSheet("background-color: rgb(3, 3, 5);");
-            ui_preset->frame_9->setStyleSheet("background-color: rgb(3, 3, 5);");
-            ui_preset->scrollArea_1->setStyleSheet("background-color: rgb(3, 3, 5);");
-            ui_preset->scrollArea_2->setStyleSheet("background-color: rgb(3, 3, 5);");
-            ui_preset->scrollArea_3->setStyleSheet("background-color: rgb(3, 3, 5);");
-            ui_preset->scrollAreaWidgetContents_1->setStyleSheet("background-color: rgb(3, 3, 5);");
-            ui_preset->scrollAreaWidgetContents_2->setStyleSheet("background-color: rgb(3, 3, 5);");
-            ui_preset->scrollAreaWidgetContents_3->setStyleSheet("background-color: rgb(3, 3, 5);");
-            ui_preset->label_4->setStyleSheet("color: rgb(255, 255, 255);");
-            ui_preset->frame_6->setStyleSheet("background-color: rgba(27, 29, 35, 20); border-top: 1px solid rgba(100, 100, 168, 50);");
-            ui_preset->frame_1->setStyleSheet("background-color: rgba(5, 25, 30, 220); border: none;");
-            ui_preset->frame_2->setStyleSheet("background-color: rgba(5, 25, 30, 220); border: none;");
-            ui_preset->frame_3->setStyleSheet("background-color: rgba(5, 25, 30, 220); border: none;");
-        }; break;
-        case 2:
-        {
-            ui_preset->frame_main->setStyleSheet("background-color: rgb(39, 44, 54);");
-            ui_preset->frame_7->setStyleSheet("background-color: rgb(39, 44, 54);");
-            ui_preset->frame_8->setStyleSheet("background-color: rgb(39, 44, 54);");
-            ui_preset->frame_9->setStyleSheet("background-color: rgb(39, 44, 54);");
-            ui_preset->scrollArea_1->setStyleSheet("background-color: rgb(39, 44, 54);");
-            ui_preset->scrollArea_2->setStyleSheet("background-color: rgb(39, 44, 54);");
-            ui_preset->scrollArea_3->setStyleSheet("background-color: rgb(39, 44, 54);");
-            ui_preset->scrollAreaWidgetContents_1->setStyleSheet("background-color: rgb(39, 44, 54);");
-            ui_preset->scrollAreaWidgetContents_2->setStyleSheet("background-color: rgb(39, 44, 54);");
-            ui_preset->scrollAreaWidgetContents_3->setStyleSheet("background-color: rgb(39, 44, 54);");
-            ui_preset->label_4->setStyleSheet("color: rgb(255, 255, 255);");
-            ui_preset->frame_6->setStyleSheet("background-color: rgba(27, 29, 35, 150); border-top: 1px solid rgba(100, 100, 168, 50);");
-            ui_preset->frame_1->setStyleSheet("background-color: rgba(27, 29, 35, 150); border: none;");
-            ui_preset->frame_2->setStyleSheet("background-color: rgba(27, 29, 35, 150); border: none;");
-            ui_preset->frame_3->setStyleSheet("background-color: rgba(27, 29, 35, 150); border: none;");
-        }; break;
-        case 3:
-        {
-            ui_preset->frame_main->setStyleSheet("background-color: rgb(220, 220, 220);");
-            ui_preset->frame_7->setStyleSheet("background-color: rgb(220, 220, 220);");
-            ui_preset->frame_8->setStyleSheet("background-color: rgb(220, 220, 220);");
-            ui_preset->frame_9->setStyleSheet("background-color: rgb(220, 220, 220);");
-            ui_preset->scrollArea_1->setStyleSheet("background-color: rgb(220, 220, 220);");
-            ui_preset->scrollArea_2->setStyleSheet("background-color: rgb(220, 220, 220);");
-            ui_preset->scrollArea_3->setStyleSheet("background-color: rgb(220, 220, 220);");
-            ui_preset->scrollAreaWidgetContents_1->setStyleSheet("background-color: rgb(220, 220, 220);");
-            ui_preset->scrollAreaWidgetContents_2->setStyleSheet("background-color: rgb(220, 220, 220);");
-            ui_preset->scrollAreaWidgetContents_3->setStyleSheet("background-color: rgb(220, 220, 220);");
-            ui_preset->label_4->setStyleSheet("color: rgb(3, 3, 5);");
-            ui_preset->frame_6->setStyleSheet("background-color: rgba(27, 29, 35, 120); border-top: 1px solid rgba(100, 100, 168, 50);");
-            ui_preset->frame_1->setStyleSheet("background-color: rgba(27, 29, 35, 120); border: none;");
-            ui_preset->frame_2->setStyleSheet("background-color: rgba(27, 29, 35, 120); border: none;");
-            ui_preset->frame_3->setStyleSheet("background-color: rgba(27, 29, 35, 120); border: none;");
-        }; break;
-    }
-}
-
 bool Preset::eventFilter(QObject *watched, QEvent *event)
 {
     if (event->type() == QEvent::MouseButtonRelease) // *************** Reset ************************* //
@@ -886,8 +806,8 @@ bool Preset::eventFilter(QObject *watched, QEvent *event)
                 {
                     int deltaX = mouse_event->globalPos().x() - mouseClickCoordinate.x();
                     int deltaY = mouse_event->globalPos().y() - mouseClickCoordinate.y();
-                    int deltaWidth = (int)mouse_event->localPos().x() - mouseClickCoordinate.x();
-                    int deltaHeight = (int)mouse_event->localPos().y() - mouseClickCoordinate.y();
+                    int deltaWidth = static_cast<int>(mouse_event->localPos().x()) - mouseClickCoordinate.x();
+                    int deltaHeight = static_cast<int>(mouse_event->localPos().y()) - mouseClickCoordinate.y();
                     if (clickPressed_Left_ResizeFlag == true)
                     {
                         this->setGeometry(deltaX, _posY, this->width() - deltaWidth, _height);
