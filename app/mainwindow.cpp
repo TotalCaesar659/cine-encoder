@@ -1,4 +1,5 @@
-﻿#ifdef Q_OS_WIN
+﻿#include <QtGlobal>
+#ifdef Q_OS_WIN
     #ifdef __MINGW32__
         #ifdef _UNICODE
             #define _itot _itow
@@ -11,7 +12,6 @@
     #define UNICODE
     #endif
 #endif
-
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "about.h"
@@ -20,6 +20,8 @@
 #include "selectpreset.h"
 #include "taskcomplete.h"
 #include "dialog.h"
+
+
 
 
 
@@ -544,9 +546,9 @@ void MainWindow::openFiles(const QStringList &file_name_open)
         QString maxFall = QString::fromStdWString(maxFall_wstr);
         QString width_qstr = QString::fromStdWString(width_wstr);
         QString height_qstr = QString::fromStdWString(height_wstr);
-        QString h_qstr = QString::number(h);
+        /*QString h_qstr = QString::number(h);
         QString m_qstr = QString::number(m);
-        QString s_qstr = QString::number(s);
+        QString s_qstr = QString::number(s);*/
         QString chroma_subsampling = QString::fromStdWString(chroma_subsampling_wstr);
         QString bit_rate_qstr = QString::number(bit_rate);
         QString aspect_ratio = QString::fromStdWString(aspect_ratio_wstr);
@@ -790,7 +792,7 @@ void MainWindow::make_preset()  //*********************************** Make prese
     QString resize;
     if ((p7 == true) && (p8 == 2)) {
         if ((p9 != "") && (p10 != "") && (p9 != "Source") && (p10 != "Source")) {
-            resize = QString("-vf scale=%1:%2 ").arg(p9).arg(p10);
+            resize = QString("-vf scale=%1:%2 ").arg(p9, p10);
         };
     };
 

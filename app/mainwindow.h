@@ -22,8 +22,7 @@
 #include <QPixmap>
 #include <QHBoxLayout>
 #include <QLabel>
-#include <QtGlobal>
-#include <QDebug>
+//#include <QDebug>
 #include <iostream>
 #include <iomanip>
 #include <sstream>
